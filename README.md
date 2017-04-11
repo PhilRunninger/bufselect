@@ -1,4 +1,4 @@
-# bufselect
+# bufselect.vim
 
 I wrote this as a much scaled-down alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer), with commands mapped to same keys used by my new favorite file manager, [vifm](http://vifm.info/). There is no customization in this plugin, and the keys are mapped as follows:
 
