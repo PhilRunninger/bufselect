@@ -2,6 +2,14 @@ command! ShowBufferList :call ShowBufferList()
 
 function! ShowBufferList()
     let s:originalBuffer = bufnr('%')
+    call RefreshBufferList()
+endfunction
+
+function! RefreshBufferList()
+    let old_ei = &eventignore
+    set eventignore=all
+    execute 'keepalt buffer ' . s:originalBuffer
+    let &eventignore = old_ei
     redir => bufferList
     silent buffers
     redir END
@@ -39,7 +47,7 @@ endfunction
 
 function! CloseBuffer()
     execute 'bwipeout ' . GetSelectedBuffer()
-    call ShowBufferList()
+    call RefreshBufferList()
 endfunction
 
 function! OpenBuffer(bufNum)
