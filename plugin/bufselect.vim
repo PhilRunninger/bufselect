@@ -22,6 +22,7 @@ function! ShowBufferList()
     execute '%delete'
     call setline(1, bufferList)
     setlocal nomodifiable
+    call setpos('.', [s:bufferListNumber, 1, 1, 0])
     call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+1, 1, 0])
 
     nnoremap <buffer> d :call CloseBuffer()<CR>
