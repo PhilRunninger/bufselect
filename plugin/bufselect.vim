@@ -20,7 +20,7 @@ function! RefreshBufferList()
     let bufferList = map(bufferList, 'substitute(v:val, "^\\(\\s*\\d*\\)", "\\1: ", "")')
 
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
-    execute 'silent buffer ' . s:bufferListNumber
+    execute 'silent keepalt buffer ' . s:bufferListNumber
     setlocal buftype=nofile
     setlocal noswapfile
     setlocal nonumber
