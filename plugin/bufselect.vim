@@ -1,7 +1,7 @@
 command! ShowBufferList :call ShowBufferList()
 
 function! ShowBufferList()
-    let originalBuffer = bufnr('%')
+    let s:originalBuffer = bufnr('%')
     redir => bufferList
     silent buffers
     redir END
@@ -25,7 +25,7 @@ function! ShowBufferList()
     call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+1, 1, 0])
 
     nnoremap <buffer> d :call CloseBuffer()<CR>
-    execute 'nnoremap <buffer> h :call OpenBuffer(' . originalBuffer . ')<CR>'
+    execute 'nnoremap <buffer> h :call OpenBuffer(' . s:originalBuffer . ')<CR>'
     nnoremap <buffer> l :call OpenBuffer(GetSelectedBuffer())<CR>
     nnoremap <buffer> ? :call ShowHelp()<CR>
 endfunction
@@ -44,6 +44,9 @@ endfunction
 function! OpenBuffer(bufNum)
     execute 'keepalt buffer ' . a:bufNum
     execute 'bwipeout ' . s:bufferListNumber
+    if a:bufNum != s:originalBuffer
+        let @# = bufname(s:originalBuffer)
+    endif
 endfunction
 
 function! ShowHelp()
