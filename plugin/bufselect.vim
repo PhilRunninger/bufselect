@@ -16,12 +16,12 @@ function! RefreshBufferList()
 
     let bufferList = []
     let tmpBuffers = split(tmpBuffers, '\n')
-    let maxLength = max(map(copy(tmpBuffers), 'strlen(fnamemodify(substitute(v:val, ".*\"\\(.*\\)\".*", "\\1", ""), ":t"))'))
+    let maxLength = max(map(copy(tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     for buf in tmpBuffers
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(bufferName)
             let fileName = fnamemodify(bufferName, ':t')
-            let replacement = fileName . repeat(' ', maxLength - strlen(fileName) + 2) . fnamemodify(bufferName, ':h')
+            let replacement = fileName . repeat(' ', maxLength - strlen(fileName)) . '  ' . fnamemodify(bufferName, ':h')
         else
             let replacement = bufferName
         endif
