@@ -70,6 +70,6 @@ endfunction
 
 function! ShowHelp()
     echohl Special
-    echomsg "j,k:Navigate   h:Exit list   l:Open buffer   d:Close buffer"
+    echomsg "j,k:Navigate   h:Cancel   l:Open   d:Remove"
     echohl None
 endfunction
