@@ -10,14 +10,24 @@ function! RefreshBufferList()
     set eventignore=all
     execute 'keepalt buffer ' . s:originalBuffer
     let &eventignore = old_ei
-    redir => bufferList
+    redir => tmpBuffers
     silent buffers
     redir END
 
-    let bufferList = split(bufferList, '\n')
-    let bufferList = map(bufferList, 'substitute(v:val, "\\s*line.*$", "", "")')
-    let bufferList = map(bufferList, 'substitute(v:val, "\"", "", "g")')
-    let bufferList = map(bufferList, 'substitute(v:val, "^\\(\\s*\\d*\\)", "\\1: ", "")')
+    let bufferList = []
+    let tmpBuffers = split(tmpBuffers, '\n')
+    let maxLength = max(map(copy(tmpBuffers), 'strlen(fnamemodify(substitute(v:val, ".*\"\\(.*\\)\".*", "\\1", ""), ":t"))'))
+    for buf in tmpBuffers
+        let bufferName = matchstr(buf, '"\zs.*\ze"')
+        if filereadable(bufferName)
+            let fileName = fnamemodify(bufferName, ':t')
+            let replacement = fileName . repeat(' ', maxLength - strlen(fileName) + 2) . fnamemodify(bufferName, ':h')
+        else
+            let replacement = bufferName
+        endif
+        let buf = substitute(buf, '".*', replacement, "")
+        call add(bufferList, substitute(buf, '^\(\s*\d\+\)', '\1:', ""))
+    endfor
 
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
     execute 'silent keepalt buffer ' . s:bufferListNumber
