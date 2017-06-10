@@ -41,9 +41,10 @@ function! RefreshBufferList()
     setlocal modifiable
     execute '%delete'
     call setline(1, bufferList)
+    call append(0, ['CWD: ' . getcwd(), repeat('=', 5+strlen(getcwd()))])
     setlocal nomodifiable
     call setpos('.', [s:bufferListNumber, 1, 1, 0])
-    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+1, 1, 0])
+    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+2, 1, 0])
 
     nnoremap <buffer> d :call CloseBuffer()<CR>
     execute 'nnoremap <buffer> h :call OpenBuffer(' . s:originalBuffer . ')<CR>'
