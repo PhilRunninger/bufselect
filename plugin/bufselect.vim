@@ -21,7 +21,7 @@ function! RefreshBufferList()
     let maxLength = max(map(copy(tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     for buf in tmpBuffers
         let bufferName = matchstr(buf, '"\zs.*\ze"')
-        if filereadable(bufferName)
+        if filereadable(fnamemodify(bufferName, ':p'))
             let fileName = fnamemodify(bufferName, ':t')
             let replacement = fileName . repeat(' ', maxLength - strlen(fileName)) . '  ' . fnamemodify(bufferName, ':h')
         else
