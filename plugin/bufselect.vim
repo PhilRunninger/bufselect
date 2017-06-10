@@ -8,7 +8,9 @@ endfunction
 function! RefreshBufferList()
     let old_ei = &eventignore
     set eventignore=all
-    execute 'keepalt buffer ' . s:originalBuffer
+    if bufexists(s:originalBuffer)
+        execute 'keepalt buffer ' . s:originalBuffer
+    endif
     let &eventignore = old_ei
     redir => tmpBuffers
     silent buffers
@@ -63,7 +65,7 @@ endfunction
 function! OpenBuffer(bufNum)
     execute 'keepalt buffer ' . a:bufNum
     execute 'bwipeout ' . s:bufferListNumber
-    if a:bufNum != s:originalBuffer
+    if a:bufNum != s:originalBuffer && bufexists(s:originalBuffer)
         let @# = bufname(s:originalBuffer)
     endif
 endfunction
