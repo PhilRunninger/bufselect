@@ -44,11 +44,13 @@ function! RefreshBufferList()
     call append(0, ['CWD: ' . getcwd(), repeat('=', 5+strlen(getcwd()))])
     setlocal nomodifiable
     call setpos('.', [s:bufferListNumber, 1, 1, 0])
-    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+2, 1, 0])
+    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+3, 1, 0])
 
     nnoremap <buffer> d :call CloseBuffer()<CR>
     execute 'nnoremap <buffer> h :call OpenBuffer(' . s:originalBuffer . ')<CR>'
     nnoremap <buffer> l :call OpenBuffer(GetSelectedBuffer())<CR>
+    nnoremap <buffer> s :call SplitOpenBuffer('s', GetSelectedBuffer())<CR>
+    nnoremap <buffer> v :call SplitOpenBuffer('v', GetSelectedBuffer())<CR>
     nnoremap <buffer> ? :call ShowHelp()<CR>
 endfunction
 
@@ -64,15 +66,36 @@ function! CloseBuffer()
 endfunction
 
 function! OpenBuffer(bufNum)
-    execute 'keepalt buffer ' . a:bufNum
+    call SwitchBuffer(a:bufNum)
+    call SetAlternate(s:originalBuffer)
+endfunction
+
+function! SplitOpenBuffer(windowCmd, bufNum)
+    execute 'wincmd ' . a:windowCmd
+    call SwitchBuffer(a:bufNum)
+    execute 'wincmd p'
+    call SwitchBuffer(s:originalBuffer)
+    call SetAlternate(s:originalBuffer)
+    execute 'wincmd p'
+endfunction
+
+function! SwitchBuffer(bufNum)
+    if bufexists(a:bufNum)
+        execute 'keepalt buffer ' . a:bufNum
+    else
+        execute 'bprevious'
+    endif
+endfunction
+
+function! SetAlternate(bufNum)
     execute 'bwipeout ' . s:bufferListNumber
-    if a:bufNum != s:originalBuffer && bufexists(s:originalBuffer)
-        let @# = bufname(s:originalBuffer)
+    if a:bufNum != s:originalBuffer && bufexists(a:bufNum)
+        let @# = bufname(a:bufNum)
     endif
 endfunction
 
 function! ShowHelp()
     echohl Special
-    echomsg "j,k:Navigate   h:Cancel   l:Open   d:Remove"
+    echomsg "j,k:Navigate   h:Cancel   l:Open   s:Split-Open   v:VSplit-Open   d:Remove"
     echohl None
 endfunction
