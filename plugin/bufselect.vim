@@ -46,6 +46,10 @@ function! RefreshBufferList()
     call setpos('.', [s:bufferListNumber, 1, 1, 0])
     call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+3, 1, 0])
 
+    syntax match Number /^\s*\d\+:/he=e-1
+    syntax match Title /CWD: .*/hs=s+4
+    " syntax match Label /^CWD/
+
     nnoremap <buffer> d :call CloseBuffer()<CR>
     execute 'nnoremap <buffer> h :call OpenBuffer(' . s:originalBuffer . ')<CR>'
     nnoremap <buffer> l :call OpenBuffer(GetSelectedBuffer())<CR>
