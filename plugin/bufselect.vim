@@ -57,7 +57,7 @@ endfunction
 function! GetSelectedBuffer()
     let lineOfText = getline(line('.'))
     let bufNum = matchstr(lineOfText, '^\s*\zs\d\+\ze:')
-    return bufNum
+    return str2nr(bufNum)
 endfunction
 
 function! CloseBuffer()
