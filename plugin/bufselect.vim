@@ -41,14 +41,15 @@ function! RefreshBufferList()
     setlocal modifiable
     execute '%delete'
     call setline(1, bufferList)
-    call append(0, ['CWD: ' . getcwd(), repeat('=', 5+strlen(getcwd()))])
+    call append(line('$'), [repeat('=', 7+strlen(getcwd())), 'CWD: ' . getcwd()])
     setlocal nomodifiable
     call setpos('.', [s:bufferListNumber, 1, 1, 0])
-    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+3, 1, 0])
+    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+1, 1, 0])
 
-    syntax match Number /^\s*\d\+:/he=e-1
-    syntax match Title /CWD: .*/hs=s+4
-    " syntax match Label /^CWD/
+    syntax match TypeDef /^CWD: .*/hs=s+5
+    syntax match Tag /^=\+$/
+    syntax match Identifier /^\s*\d\+: %.*/
+    syntax match Label /^\s*\d\+: #.*/
 
     nnoremap <buffer> d :call CloseBuffer()<CR>
     execute 'nnoremap <buffer> h :call OpenBuffer(' . s:originalBuffer . ')<CR>'
