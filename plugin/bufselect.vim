@@ -18,6 +18,7 @@ function! RefreshBufferList()
 
     let bufferList = []
     let tmpBuffers = split(tmpBuffers, '\n')
+    call filter(tmpBuffers, 'v:val !~ "\\(Location\\|Quickfix\\) List"')
     let maxLength = max(map(copy(tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     for buf in tmpBuffers
         let bufferName = matchstr(buf, '"\zs.*\ze"')
