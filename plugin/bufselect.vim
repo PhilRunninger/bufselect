@@ -60,6 +60,11 @@ function! RefreshBufferList()
     nnoremap <buffer> <silent> s :call SplitOpenBuffer('s', GetSelectedBuffer())<CR>
     nnoremap <buffer> <silent> v :call SplitOpenBuffer('v', GetSelectedBuffer())<CR>
     nnoremap <buffer> <silent> ? :call ShowHelp()<CR>
+
+    augroup BufferListForbiddenLines
+        autocmd!
+        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | call setpos('.', [s:bufferListNumber, line('$')-2, col('.'), 0]) | endif
+    augroup END
 endfunction
 
 function! GetSelectedBuffer()
