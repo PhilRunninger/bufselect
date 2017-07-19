@@ -52,13 +52,14 @@ function! RefreshBufferList()
     syntax match Identifier /^\s*\d\+: %.*/
     syntax match Label /^\s*\d\+: #.*/
 
-    nnoremap <buffer> d :call CloseBuffer()<CR>
-    nnoremap <buffer> l :call OpenBuffer(GetSelectedBuffer())<CR>
-    nnoremap <buffer> s :call SplitOpenBuffer('s', GetSelectedBuffer())<CR>
-    nnoremap <buffer> v :call SplitOpenBuffer('v', GetSelectedBuffer())<CR>
-    nnoremap <buffer> ? :call ShowHelp()<CR>
+    nnoremap <buffer> <silent> x :call CloseBuffer()<CR>
     nnoremap <buffer> <silent> <Esc> :call ExitBufferList()<CR>
     nnoremap <buffer> <silent> h :call ExitBufferList()<CR>
+    nnoremap <buffer> <silent> l :call OpenBuffer(GetSelectedBuffer())<CR>
+    nnoremap <buffer> <silent> <Enter> :call OpenBuffer(GetSelectedBuffer())<CR>
+    nnoremap <buffer> <silent> s :call SplitOpenBuffer('s', GetSelectedBuffer())<CR>
+    nnoremap <buffer> <silent> v :call SplitOpenBuffer('v', GetSelectedBuffer())<CR>
+    nnoremap <buffer> <silent> ? :call ShowHelp()<CR>
 endfunction
 
 function! GetSelectedBuffer()
@@ -107,6 +108,6 @@ endfunction
 
 function! ShowHelp()
     echohl Special
-    echomsg "j,k:Navigate   h:Cancel   l:Open   s:Split-Open   v:VSplit-Open   d:Remove"
+    echomsg "j,k:Navigate   h,Esc:Exit   l,Enter:Open   s:Split-Open   v:VSplit-Open   x:Delete Buffer"
     echohl None
 endfunction
