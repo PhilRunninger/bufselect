@@ -53,11 +53,12 @@ function! RefreshBufferList()
     syntax match Label /^\s*\d\+: #.*/
 
     nnoremap <buffer> d :call CloseBuffer()<CR>
-    execute 'nnoremap <buffer> h :call OpenBuffer(' . s:originalBuffer . ')<CR>'
     nnoremap <buffer> l :call OpenBuffer(GetSelectedBuffer())<CR>
     nnoremap <buffer> s :call SplitOpenBuffer('s', GetSelectedBuffer())<CR>
     nnoremap <buffer> v :call SplitOpenBuffer('v', GetSelectedBuffer())<CR>
     nnoremap <buffer> ? :call ShowHelp()<CR>
+    nnoremap <buffer> <silent> <Esc> :call ExitBufferList()<CR>
+    nnoremap <buffer> <silent> h :call ExitBufferList()<CR>
 endfunction
 
 function! GetSelectedBuffer()
@@ -69,6 +70,10 @@ endfunction
 function! CloseBuffer()
     execute 'bwipeout ' . GetSelectedBuffer()
     call RefreshBufferList()
+endfunction
+
+function! ExitBufferList()
+    call OpenBuffer(s:originalBuffer)
 endfunction
 
 function! OpenBuffer(bufNum)
