@@ -9,7 +9,7 @@ Use your favorite plugin manager to install this plugin. My personal favorite is
 Plug 'git@github.com:PhilRunninger/bufselect.vim.git'
 ```
 
-[Vundle](https://github.com/VundleVim/Vundle.vim) and [pathogen](https://github.com/tpope/vim-pathogen) should also work just as easily. Just follow the convention setup for either one.
+[Vundle](https://github.com/VundleVim/Vundle.vim) and [pathogen](https://github.com/tpope/vim-pathogen) should also work just as easily. Just follow the convention set up for either one.
 
 ## Command
 
