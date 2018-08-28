@@ -24,7 +24,7 @@ function! RefreshBufferList()
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
             let fileName = fnamemodify(bufferName, ':t')
-            let replacement = fileName . repeat(' ', maxLength - strlen(fileName)) . '  ' . fnamemodify(bufferName, ':h')
+            let replacement = fileName . repeat(' ', maxLength - strlen(fileName)) . '  ' . escape(fnamemodify(bufferName, ':h'), '\')
         else
             let replacement = bufferName
         endif
