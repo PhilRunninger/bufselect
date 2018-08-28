@@ -28,7 +28,7 @@ function! RefreshBufferList()
         else
             let replacement = bufferName
         endif
-        let buf = substitute(buf, '".*', replacement, "")
+        let buf = substitute(escape(buf, '\'), '".*', escape(replacement, '\'), "")
         call add(bufferList, substitute(buf, '^\(\s*\d\+\)', '\1:', ""))
     endfor
 
