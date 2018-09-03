@@ -8,8 +8,8 @@ endfunction
 
 call s:InitVar("g:BufSelectExit", "q")
 call s:InitVar("g:BufSelectOpen", "o")
-call s:InitVar("g:BufSelectSplit", "i")
-call s:InitVar("g:BufSelectVSplit", "s")
+call s:InitVar("g:BufSelectSplit", "s")
+call s:InitVar("g:BufSelectVSplit", "v")
 call s:InitVar("g:BufSelectDeleteBuffer", "x")
 call s:InitVar("g:BufSelectSort", "S")
 call s:InitVar("g:BufSelectSortOrder", "Name")
