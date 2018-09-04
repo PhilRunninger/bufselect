@@ -162,8 +162,10 @@ endfunction
 
 function! s:ChangeSort()   " {{{1
     let g:BufSelectSortOrder = s:sortOptions[(index(s:sortOptions, g:BufSelectSortOrder) + 1) % len(s:sortOptions)]
+    let l:currBuffer = s:GetSelectedBuffer()
     call s:SortBufferList()
     call s:UpdateFooter()
+    call s:SetPosition(search('^\s*'.l:currBuffer.':', 'w'))
 endfunction
 
 function! s:ShowHelp()   " {{{1
