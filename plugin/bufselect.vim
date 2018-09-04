@@ -115,7 +115,7 @@ function! s:SortBufferList()   " {{{1
     setlocal nomodifiable
 endfunction
 
-function! s:UpdateFooter()
+function! s:UpdateFooter()   " {{{1
     let l:line = repeat(g:BufSelectSortOrder == "Num" ? '=' : '-', s:filenameColumn).
                \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn).
                \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
@@ -168,12 +168,11 @@ endfunction
 
 function! s:ShowHelp()   " {{{1
     echohl Special
-    echomsg "j,k:Navigate   ".
-          \ g:BufSelectExit.":Exit   ".
-          \ g:BufSelectOpen.":Open   ".
+    echomsg g:BufSelectOpen.":Open   ".
           \ g:BufSelectSplit.":Split-Open   ".
           \ g:BufSelectVSplit.":VSplit-Open   ".
           \ g:BufSelectDeleteBuffer.":Delete Buffer   ".
-          \ g:BufSelectSort.":Sort"
+          \ g:BufSelectSort.":Sort   ".
+          \ g:BufSelectExit.":Exit"
     echohl None
 endfunction
