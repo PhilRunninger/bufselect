@@ -29,7 +29,6 @@ function! s:RefreshBufferList(currentLine)   " {{{1
     call s:DisplayBuffers()
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
-    call s:SetupHighlighting()
     call s:SetupCommands()
 endfunction
 
@@ -59,7 +58,7 @@ function! s:CollectBufferNames()   " {{{1
     redir END
     let s:bufferList = []
     let l:tmpBuffers = split(l:tmpBuffers, '\n')
-    " call filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
+    call filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
     let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     let s:filenameColumn = match(l:tmpBuffers[0], '"')
     let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
@@ -92,7 +91,7 @@ endfunction
 function! s:DisplayBuffers()   " {{{1
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
     execute 'silent buffer ' . s:bufferListNumber
-    setlocal buftype=nofile noswapfile nonumber nowrap cursorline statusline=[Buffer\ List]
+    setlocal buftype=nofile noswapfile nonumber nowrap cursorline statusline=[Buffer\ List] syntax=bufselect
     setlocal modifiable
     execute '%delete'
     call setline(1, s:bufferList)
@@ -121,15 +120,6 @@ function! s:UpdateFooter()
     setlocal nomodifiable
 endfunction
 
-function! s:SetupHighlighting()   " {{{1
-    syntax match TypeDef /^CWD: .*/hs=s+5
-    syntax match CurrentSort /=\+/
-    syntax match Tag /^[-=]\+$/ contains=CurrentSort
-    syntax match Identifier /^\s*\d\+: %.*/
-    syntax match Label /^\s*\d\+: #.*/
-    highlight link CurrentSort Function
-endfunction
-
 function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectExit." :call <SID>SwitchBuffers(-1, '')\<CR>"
@@ -139,7 +129,7 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectSort." :call <SID>ChangeSort()\<CR>"
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
-    augroup BufferListForbiddenLines
+    augroup BufSelectLinesBoundary
         autocmd!
         autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | call setpos('.', [s:bufferListNumber, line('$')-2, col('.'), 0]) | endif
     augroup END
