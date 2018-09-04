@@ -128,8 +128,8 @@ function! s:SetPosition(currentLine)   " {{{1
     call setpos('.', [s:bufferListNumber, 1, 1, 0])
     if a:currentLine != -1
         call setpos('.', [s:bufferListNumber, a:currentLine, 1, 0])
-    elseif search('^\s*\d*:\s*%', 'w') == 0
-        call search('^\s*\d*:\s*#', 'w')
+    elseif search('^\s*\d+:\s*%', 'w') == 0
+        call search('^\s*\d+:\s*#', 'w')
     endif
 endfunction
 
