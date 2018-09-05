@@ -1,118 +1,180 @@
-command! ShowBufferList :call ShowBufferList()
-
-function! ShowBufferList()
-    let s:originalBuffer = bufnr('%')
-    call RefreshBufferList()
+" vim: foldmethod=marker
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"  BufSelect - a Vim buffer selection and deletion utility
+"
+"  Copyright 2018 Phil Runninger.
+"
+"  This program is free software; you can redistribute it and/or modify
+"  it under the terms of the GNU General Public License as published by
+"  the Free Software Foundation; either version 3 of the License, or
+"  (at your option) any later version.
+"
+"  This program is distributed in the hope that it will be useful,
+"  but WITHOUT ANY WARRANTY; without even the implied warranty of
+"  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+"  GNU General Public License <http://www.gnu.org/licenses/>
+"  for more details."
+""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:InitVar(name, value)   " {{{1
+    if !exists(a:name)
+        execute "let ".a:name."='".a:value."'"
+    endif
 endfunction
 
-function! RefreshBufferList()
+call s:InitVar("g:BufSelectExit", "q")
+call s:InitVar("g:BufSelectOpen", "o")
+call s:InitVar("g:BufSelectSplit", "s")
+call s:InitVar("g:BufSelectVSplit", "v")
+call s:InitVar("g:BufSelectDeleteBuffer", "x")
+call s:InitVar("g:BufSelectSort", "S")
+call s:InitVar("g:BufSelectSortOrder", "Name")
+let s:sortOptions = ["Num", "Name", "Path"]
+
+command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
+
+function! s:ShowBufferList()
+    let s:currBuffer = bufnr('%')
+    let s:prevBuffer = bufnr('#')
+    call s:RefreshBufferList(-1)
+endfunction
+
+function! s:RefreshBufferList(currentLine)   " {{{1
+    call s:SwitchBuffers(-1, '')
+    call s:CollectBufferNames()
+    call s:DisplayBuffers()
+    call s:SortBufferList()
+    call s:SetPosition(a:currentLine)
+    call s:SetupCommands()
+endfunction
+
+function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
+    " Switch to the prev, curr, and next buffer in that order (if they exist)
+    " to preserve or recalculate the # and % buffers.
     let old_ei = &eventignore
     set eventignore=all
-    if bufexists(s:originalBuffer)
-        execute 'keepalt buffer ' . s:originalBuffer
-    endif
+    call s:SwitchBuffer(s:prevBuffer, '')
+    if s:currBuffer != a:nextBuffer | call s:SwitchBuffer(s:currBuffer, '') | endif
     let &eventignore = old_ei
-    redir => tmpBuffers
+    call s:SwitchBuffer(a:nextBuffer, a:windowCmd)
+endfunction
+
+function! s:SwitchBuffer(buffer, windowCmd)
+    if a:windowCmd != ''
+        execute a:windowCmd
+    endif
+    if bufexists(a:buffer)
+        execute 'buffer ' . a:buffer
+    endif
+endfunction
+
+function! s:CollectBufferNames()   " {{{1
+    redir => l:tmpBuffers
     silent buffers
     redir END
-
-    let bufferList = []
-    let tmpBuffers = split(tmpBuffers, '\n')
-    call filter(tmpBuffers, 'v:val !~ "\\(Location\\|Quickfix\\) List"')
-    let maxLength = max(map(copy(tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
-    for buf in tmpBuffers
+    let s:bufferList = []
+    let l:tmpBuffers = split(l:tmpBuffers, '\n')
+    call filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
+    let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
+    let s:filenameColumn = match(l:tmpBuffers[0], '"')
+    let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
+    for buf in l:tmpBuffers
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
-            let fileName = fnamemodify(bufferName, ':t')
-            let replacement = fileName . repeat(' ', maxLength - strlen(fileName)) . '  ' . escape(fnamemodify(bufferName, ':h'), '\')
-        else
-            let replacement = bufferName
+            " Parse the bufferName into filename and path.
+            let bufferName = printf( '%-' . (l:filenameMaxLength+2) . 's%s',
+                                   \ fnamemodify(bufferName, ':t'),
+                                   \ escape(fnamemodify(bufferName, ':h'), '\') )
         endif
-        let buf = substitute(buf, '".*', replacement, "")
-        call add(bufferList, substitute(buf, '^\(\s*\d\+\)', '\1:', ""))
+        let buf = substitute(buf, '^\(\s*\d\+\)', '\1:', "")  " Put colon after buffer number.
+        let buf = substitute(buf, '".*', bufferName, "")      " Replace quoted buffer name with parsed or unquoted buffer
+        call add(s:bufferList, buf)
     endfor
+endfunction
 
+function! s:DisplayBuffers()   " {{{1
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
-    execute 'silent keepalt buffer ' . s:bufferListNumber
-    setlocal buftype=nofile
-    setlocal noswapfile
-    setlocal nonumber
-    setlocal cursorline
-    setlocal statusline=[Buffer\ List]
+    execute 'silent buffer ' . s:bufferListNumber
+    setlocal buftype=nofile noswapfile nonumber nowrap cursorline statusline=[Buffer\ List] syntax=bufselect
     setlocal modifiable
     execute '%delete'
-    call setline(1, bufferList)
-    call append(line('$'), [repeat('=', 7+strlen(getcwd())), 'CWD: ' . getcwd()])
+    call setline(1, s:bufferList)
+    call append(line('$'), [repeat('-',100), 'CWD: ' . getcwd()])
+    call s:UpdateFooter()
     setlocal nomodifiable
+endfunction
+
+function! s:SortBufferList()   " {{{1
+    setlocal modifiable
+    execute '1,$-2sort'
+    if g:BufSelectSortOrder == "Name" || g:BufSelectSortOrder == "Path"
+        execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '/'
+    endif
+    if g:BufSelectSortOrder == "Path"
+        execute '1,$-2sort /^' . repeat('.', s:pathColumn-1) . '/'
+    endif
+    setlocal nomodifiable
+endfunction
+
+function! s:UpdateFooter()   " {{{1
+    let l:line = repeat(g:BufSelectSortOrder == "Num" ? '=' : '-', s:filenameColumn).
+               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn).
+               \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
+    setlocal modifiable
+    call setline(line('$')-1, l:line)
+    setlocal nomodifiable
+endfunction
+
+function! s:SetPosition(currentLine)   " {{{1
     call setpos('.', [s:bufferListNumber, 1, 1, 0])
-    call setpos('.', [s:bufferListNumber, match(bufferList, '^\s*\d*:\s*%')+1, 1, 0])
+    if a:currentLine != -1
+        call setpos('.', [s:bufferListNumber, a:currentLine, 1, 0])
+    elseif search('^\s*\d+:\s*%', 'w') == 0
+        call search('^\s*\d+:\s*#', 'w')
+    endif
+endfunction
 
-    syntax match TypeDef /^CWD: .*/hs=s+5
-    syntax match Tag /^=\+$/
-    syntax match Identifier /^\s*\d\+: %.*/
-    syntax match Label /^\s*\d\+: #.*/
+function! s:SetupCommands()   " {{{1
+    execute "nnoremap <buffer> <silent> ".g:BufSelectDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectExit." :call <SID>SwitchBuffers(-1, '')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSort." :call <SID>ChangeSort()\<CR>"
+    nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
-    nnoremap <buffer> <silent> x :call CloseBuffer()<CR>
-    nnoremap <buffer> <silent> <Esc> :call ExitBufferList()<CR>
-    nnoremap <buffer> <silent> h :call ExitBufferList()<CR>
-    nnoremap <buffer> <silent> l :call OpenBuffer(GetSelectedBuffer())<CR>
-    nnoremap <buffer> <silent> <Enter> :call OpenBuffer(GetSelectedBuffer())<CR>
-    nnoremap <buffer> <silent> s :call SplitOpenBuffer('s', GetSelectedBuffer())<CR>
-    nnoremap <buffer> <silent> v :call SplitOpenBuffer('v', GetSelectedBuffer())<CR>
-    nnoremap <buffer> <silent> ? :call ShowHelp()<CR>
-
-    augroup BufferListForbiddenLines
+    augroup BufSelectLinesBoundary
         autocmd!
         autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | call setpos('.', [s:bufferListNumber, line('$')-2, col('.'), 0]) | endif
     augroup END
 endfunction
 
-function! GetSelectedBuffer()
+function! s:GetSelectedBuffer()   " {{{1
     let lineOfText = getline(line('.'))
     let bufNum = matchstr(lineOfText, '^\s*\zs\d\+\ze:')
     return str2nr(bufNum)
 endfunction
 
-function! CloseBuffer()
-    execute 'bwipeout ' . GetSelectedBuffer()
-    call RefreshBufferList()
+function! s:CloseBuffer()   " {{{1
+    execute 'bwipeout ' . s:GetSelectedBuffer()
+    echomsg "line = ".line('.')
+    call s:RefreshBufferList(line('.'))
 endfunction
 
-function! ExitBufferList()
-    call OpenBuffer(s:originalBuffer)
+function! s:ChangeSort()   " {{{1
+    let g:BufSelectSortOrder = s:sortOptions[(index(s:sortOptions, g:BufSelectSortOrder) + 1) % len(s:sortOptions)]
+    let l:currBuffer = s:GetSelectedBuffer()
+    call s:SortBufferList()
+    call s:UpdateFooter()
+    call s:SetPosition(search('^\s*'.l:currBuffer.':', 'w'))
 endfunction
 
-function! OpenBuffer(bufNum)
-    call SwitchBuffer(a:bufNum)
-    call SetAlternate(s:originalBuffer)
-endfunction
-
-function! SplitOpenBuffer(windowCmd, bufNum)
-    execute 'wincmd ' . a:windowCmd
-    call SwitchBuffer(a:bufNum)
-    execute 'wincmd p'
-    call SwitchBuffer(s:originalBuffer)
-    call SetAlternate(s:originalBuffer)
-    execute 'wincmd p'
-endfunction
-
-function! SwitchBuffer(bufNum)
-    if bufexists(a:bufNum)
-        execute 'keepalt buffer ' . a:bufNum
-    else
-        execute 'bprevious'
-    endif
-endfunction
-
-function! SetAlternate(bufNum)
-    execute 'bwipeout ' . s:bufferListNumber
-    if a:bufNum != s:originalBuffer && bufexists(a:bufNum)
-        let @# = bufname(a:bufNum)
-    endif
-endfunction
-
-function! ShowHelp()
+function! s:ShowHelp()   " {{{1
     echohl Special
-    echomsg "j,k:Navigate   h,Esc:Exit   l,Enter:Open   s:Split-Open   v:VSplit-Open   x:Delete Buffer"
+    echomsg g:BufSelectOpen.":Open   ".
+          \ g:BufSelectSplit.":Split-Open   ".
+          \ g:BufSelectVSplit.":VSplit-Open   ".
+          \ g:BufSelectDeleteBuffer.":Delete Buffer   ".
+          \ g:BufSelectSort.":Sort   ".
+          \ g:BufSelectExit.":Exit"
     echohl None
 endfunction
