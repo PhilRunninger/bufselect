@@ -156,7 +156,6 @@ endfunction
 
 function! s:CloseBuffer()   " {{{1
     execute 'bwipeout ' . s:GetSelectedBuffer()
-    echomsg "line = ".line('.')
     call s:RefreshBufferList(line('.'))
 endfunction
 
