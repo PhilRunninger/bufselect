@@ -52,16 +52,16 @@ function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
     " to preserve or recalculate the # and % buffers.
     let old_ei = &eventignore
     set eventignore=all
-    call s:SwitchBuffer(s:prevBuffer, '')
-    if s:currBuffer != a:nextBuffer | call s:SwitchBuffer(s:currBuffer, '') | endif
+    call s:SwitchBuffer(s:prevBuffer)
+    if s:currBuffer != a:nextBuffer | call s:SwitchBuffer(s:currBuffer) | endif
     let &eventignore = old_ei
-    call s:SwitchBuffer(a:nextBuffer, a:windowCmd)
-endfunction
-
-function! s:SwitchBuffer(buffer, windowCmd)
     if a:windowCmd != ''
         execute a:windowCmd
     endif
+    call s:SwitchBuffer(a:nextBuffer)
+endfunction
+
+function! s:SwitchBuffer(buffer)
     if bufexists(a:buffer)
         execute 'buffer ' . a:buffer
     endif
