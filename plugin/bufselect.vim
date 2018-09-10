@@ -128,9 +128,9 @@ function! s:UpdateFooter()   " {{{1
 endfunction
 
 function! s:SetPosition(currentLine)   " {{{1
-    call setpos('.', [s:bufferListNumber, 1, 1, 0])
+    execute 'normal! gg0'
     if a:currentLine != -1
-        call setpos('.', [s:bufferListNumber, a:currentLine, 1, 0])
+        execute 'normal! '.a:currentLine.'gg0'
     elseif search('^\s*\d\+:\s*%', 'w') == 0
         call search('^\s*\d\+:\s*#', 'w')
     endif
@@ -147,7 +147,7 @@ function! s:SetupCommands()   " {{{1
 
     augroup BufSelectLinesBoundary
         autocmd!
-        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | call setpos('.', [s:bufferListNumber, line('$')-2, col('.'), 0]) | endif
+        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | execute 'normal! G2k0' | endif
     augroup END
 endfunction
 
