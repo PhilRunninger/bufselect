@@ -52,12 +52,15 @@ function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
     " to preserve or recalculate the # and % buffers.
     let old_ei = &eventignore
     set eventignore=all
+
     call s:SwitchBuffer(s:prevBuffer)
-    if s:currBuffer != a:nextBuffer | call s:SwitchBuffer(s:currBuffer) | endif
-    let &eventignore = old_ei
-    if a:windowCmd != ''
-        execute a:windowCmd
+
+    if s:currBuffer != a:nextBuffer
+        call s:SwitchBuffer(s:currBuffer)
     endif
+
+    let &eventignore = old_ei
+    execute a:windowCmd
     call s:SwitchBuffer(a:nextBuffer)
 endfunction
 
@@ -81,7 +84,7 @@ function! s:CollectBufferNames()   " {{{1
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
             " Parse the bufferName into filename and path.
-            let bufferName = printf( '%-' . (l:filenameMaxLength+2) . 's%s',
+            let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %s',
                                    \ fnamemodify(bufferName, ':t'),
                                    \ escape(fnamemodify(bufferName, ':h'), '\') )
         endif
