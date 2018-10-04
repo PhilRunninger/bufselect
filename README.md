@@ -1,11 +1,14 @@
 # bufselect.vim
 
-This is a much scaled-down alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. I wanted this plugin to be a lot fewer lines of code, so I removed functionality I didn't really find necessary. What it ended up being is:
+This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. I wanted this plugin to be a lot lighter weight, so I removed functionality I didn't really find necessary. What it ended up being is:
 
-* a very clean list that shows buffer number, filename, and relative path of each buffer you'd see in the `:ls` command
-* a few key mappings to open buffers (including in splits), delete buffers, or sort the list
-* a single command to kick things off
-* a non-persistent list of buffers. The buffer list is generated each time the command is called, rather than being maintained by autocommands when buffers are entered, exited, or deleted. This simplifies the code considerably.
+* a very clean list that shows the buffer number, filename, and relative path of the buffers you see in the `:ls` command
+* a few key mappings to do the following tasks:
+    * open buffers, including into splits (**`o`**, **`s`**, **`v`**)
+    * delete buffers (**`x`**)
+    * sort the list (**`S`**)
+* a single command to kick things off (**`:ShowBufferList`**)
+* a non-persistent list of buffers. The buffer list is generated each time the command is called, rather than being maintained behind the scenes with autocommands. This simplifies the code considerably.
 
 ## Installation
 
@@ -14,7 +17,7 @@ Use your favorite plugin manager to install this plugin. My personal favorite is
 Plug 'git@github.com:PhilRunninger/bufselect.vim.git'
 ```
 
-[Vundle](https://github.com/VundleVim/Vundle.vim), [pathogen](https://github.com/tpope/vim-pathogen), and others should also work just as easily. Just follow the convention set up the plugin manager of your choice.
+[Vundle](https://github.com/VundleVim/Vundle.vim), [pathogen](https://github.com/tpope/vim-pathogen), and others should also work as easily. Just follow the convention set up the plugin manager of your choice.
 
 ## Command
 
@@ -22,7 +25,7 @@ The only command is **`:ShowBufferList`**, which can be assigned to a key. For e
 ```
 nnoremap <silent> <leader>b :ShowBufferList<CR>
 ```
-This mapping is not done by this plugin, so as not to interfere with any existing mappings you may have.
+The mapping is not done by this plugin, so as not to interfere with any existing mappings you may have.
 
 ## Settings
 ### Key Mappings
