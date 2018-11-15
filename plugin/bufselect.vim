@@ -15,19 +15,14 @@
 "  GNU General Public License <http://www.gnu.org/licenses/>
 "  for more details."
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-function! s:InitVar(name, value)   " {{{1
-    if !exists(a:name)
-        execute "let ".a:name."='".a:value."'"
-    endif
-endfunction
-
-call s:InitVar("g:BufSelectExit", "q")
-call s:InitVar("g:BufSelectOpen", "o")
-call s:InitVar("g:BufSelectSplit", "s")
-call s:InitVar("g:BufSelectVSplit", "v")
-call s:InitVar("g:BufSelectDeleteBuffer", "x")
-call s:InitVar("g:BufSelectSort", "S")
-call s:InitVar("g:BufSelectSortOrder", "Name")
+" Default values for settings {{{1
+let g:BufSelectExit         = get(g:, 'BufSelectExit',         'q')
+let g:BufSelectOpen         = get(g:, 'BufSelectOpen',         'o')
+let g:BufSelectSplit        = get(g:, 'BufSelectSplit',        's')
+let g:BufSelectVSplit       = get(g:, 'BufSelectVSplit',       'v')
+let g:BufSelectDeleteBuffer = get(g:, 'BufSelectDeleteBuffer', 'x')
+let g:BufSelectSort         = get(g:, 'BufSelectSort',         'S')
+let g:BufSelectSortOrder    = get(g:, 'BufSelectSortOrder',    'Name')
 let s:sortOptions = ["Num", "Name", "Path"]
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
