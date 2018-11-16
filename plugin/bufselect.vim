@@ -35,7 +35,7 @@ endfunction
 
 function! s:RefreshBufferList(currentLine)   " {{{1
     call s:SwitchBuffers(-1, '')
-    call s:CollectBufferNames()
+    call s:FormatBufferNames()
     call s:DisplayBuffers()
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
@@ -72,6 +72,11 @@ function! s:CollectBufferNames()   " {{{1
     let s:bufferList = []
     let l:tmpBuffers = split(l:tmpBuffers, '\n')
     call filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
+    return l:tmpBuffers
+endfunction
+
+function! s:FormatBufferNames()   " {{{1
+    let l:tmpBuffers = s:CollectBufferNames()
     let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     let s:filenameColumn = match(l:tmpBuffers[0], '"')
     let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
@@ -153,7 +158,11 @@ function! s:GetSelectedBuffer()   " {{{1
 endfunction
 
 function! s:CloseBuffer()   " {{{1
-    execute 'bwipeout ' . s:GetSelectedBuffer()
+    if len(s:CollectBufferNames()) == 1
+        echomsg "Not gonna do it. The last buffer stays."
+    else
+        execute 'bwipeout ' . s:GetSelectedBuffer()
+    endif
     call s:RefreshBufferList(line('.'))
 endfunction
 
