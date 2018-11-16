@@ -48,10 +48,6 @@ function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
     let old_ei = &eventignore
     set eventignore=all
 
-    if a:nextBuffer == -1 && !bufexists(s:currBuffer)
-        let s:currBuffer = s:GetSelectedBuffer()
-    endif
-
     call s:SwitchBuffer(s:prevBuffer)
 
     if s:currBuffer != a:nextBuffer
@@ -142,7 +138,7 @@ endfunction
 
 function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectExit." :call <SID>SwitchBuffers(-1, '')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectExit." :call <SID>ExitBufSelect()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
@@ -168,6 +164,13 @@ function! s:CloseBuffer()   " {{{1
         execute 'bwipeout ' . s:GetSelectedBuffer()
     endif
     call s:RefreshBufferList(line('.'))
+endfunction
+
+function! s:ExitBufSelect()   "{{{1
+    if !bufexists(s:prevBuffer) && !bufexists(s:currBuffer)
+        let s:currBuffer = s:GetSelectedBuffer()
+    endif
+    call s:SwitchBuffers(-1, '')
 endfunction
 
 function! s:ChangeSort()   " {{{1
