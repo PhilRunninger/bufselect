@@ -48,6 +48,10 @@ function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
     let old_ei = &eventignore
     set eventignore=all
 
+    if a:nextBuffer == -1 && !bufexists(s:currBuffer)
+        let s:currBuffer = s:GetSelectedBuffer()
+    endif
+
     call s:SwitchBuffer(s:prevBuffer)
 
     if s:currBuffer != a:nextBuffer
