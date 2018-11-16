@@ -162,8 +162,8 @@ function! s:CloseBuffer()   " {{{1
         echomsg "Not gonna do it. The last buffer stays."
     else
         execute 'bwipeout ' . s:GetSelectedBuffer()
+        call s:RefreshBufferList(line('.'))
     endif
-    call s:RefreshBufferList(line('.'))
 endfunction
 
 function! s:ExitBufSelect()   "{{{1
