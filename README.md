@@ -13,16 +13,16 @@ This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta
 ## Installation
 
 Use your favorite plugin manager to install this plugin. My personal favorite is [vim-plug](https://github.com/junegunn/vim-plug). In your **`.vimrc`**, add the following line.
-```
+```vim
 Plug 'git@github.com:PhilRunninger/bufselect.vim.git'
 ```
 
-[Vundle](https://github.com/VundleVim/Vundle.vim), [pathogen](https://github.com/tpope/vim-pathogen), and others should also work as easily. Just follow the convention set up the plugin manager of your choice.
+[Vundle](https://github.com/VundleVim/Vundle.vim), [pathogen](https://github.com/tpope/vim-pathogen), and others should also work as easily. Just follow the convention set up by the plugin manager of your choice.
 
 ## Command
 
 The only command is **`:ShowBufferList`**, which can be assigned to a key. For example,
-```
+```vim
 nnoremap <silent> <leader>b :ShowBufferList<CR>
 ```
 The mapping is not done by this plugin, so as not to interfere with any existing mappings you may have.
