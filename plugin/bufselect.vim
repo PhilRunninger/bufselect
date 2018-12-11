@@ -66,9 +66,7 @@ function! s:SwitchBuffer(buffer)
 endfunction
 
 function! s:CollectBufferNames()   " {{{1
-    redir => l:tmpBuffers
-    silent buffers
-    redir END
+    let l:tmpBuffers = execute('buffers')
     let s:bufferList = []
     let l:tmpBuffers = split(l:tmpBuffers, '\n')
     call filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
