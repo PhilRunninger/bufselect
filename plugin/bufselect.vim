@@ -16,13 +16,13 @@
 "  for more details."
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Default values for settings {{{1
-let g:BufSelectExit         = get(g:, 'BufSelectExit',         'q')
-let g:BufSelectOpen         = get(g:, 'BufSelectOpen',         'o')
-let g:BufSelectSplit        = get(g:, 'BufSelectSplit',        's')
-let g:BufSelectVSplit       = get(g:, 'BufSelectVSplit',       'v')
-let g:BufSelectDeleteBuffer = get(g:, 'BufSelectDeleteBuffer', 'x')
-let g:BufSelectSort         = get(g:, 'BufSelectSort',         'S')
-let g:BufSelectSortOrder    = get(g:, 'BufSelectSortOrder',    'Name')
+let g:BufSelectKeyExit         = get(g:, 'BufSelectKeyExit',         'q')
+let g:BufSelectKeyOpen         = get(g:, 'BufSelectKeyOpen',         'o')
+let g:BufSelectKeySplit        = get(g:, 'BufSelectKeySplit',        's')
+let g:BufSelectKeyVSplit       = get(g:, 'BufSelectKeyVSplit',       'v')
+let g:BufSelectKeyDeleteBuffer = get(g:, 'BufSelectKeyDeleteBuffer', 'x')
+let g:BufSelectKeySort         = get(g:, 'BufSelectKeySort',         'S')
+let g:BufSelectSortOrder       = get(g:, 'BufSelectSortOrder',    'Name')
 let s:sortOptions = ["Num", "Name", "Path"]
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
@@ -135,12 +135,12 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute "nnoremap <buffer> <silent> ".g:BufSelectDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectExit." :call <SID>ExitBufSelect()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectSort." :call <SID>ChangeSort()\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit." :call <SID>ExitBufSelect()\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort." :call <SID>ChangeSort()\<CR>"
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
     augroup BufSelectLinesBoundary
@@ -181,11 +181,11 @@ endfunction
 
 function! s:ShowHelp()   " {{{1
     echohl Special
-    echomsg g:BufSelectOpen.":Open   ".
-          \ g:BufSelectSplit.":Split-Open   ".
-          \ g:BufSelectVSplit.":VSplit-Open   ".
-          \ g:BufSelectDeleteBuffer.":Delete Buffer   ".
-          \ g:BufSelectSort.":Sort   ".
-          \ g:BufSelectExit.":Exit"
+    echomsg g:BufSelectKeyOpen.":Open   ".
+          \ g:BufSelectKeySplit.":Split-Open   ".
+          \ g:BufSelectKeyVSplit.":VSplit-Open   ".
+          \ g:BufSelectKeyDeleteBuffer.":Delete Buffer   ".
+          \ g:BufSelectKeySort.":Sort   ".
+          \ g:BufSelectKeyExit.":Exit"
     echohl None
 endfunction
