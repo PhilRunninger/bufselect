@@ -66,11 +66,8 @@ function! s:SwitchBuffer(buffer)
 endfunction
 
 function! s:CollectBufferNames()   " {{{1
-    let l:tmpBuffers = execute('buffers')
-    let s:bufferList = []
-    let l:tmpBuffers = split(l:tmpBuffers, '\n')
-    call filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
-    return l:tmpBuffers
+    let l:tmpBuffers = split(execute('buffers'), '\n')
+    return filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
 endfunction
 
 function! s:FormatBufferNames()   " {{{1
@@ -78,6 +75,7 @@ function! s:FormatBufferNames()   " {{{1
     let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     let s:filenameColumn = match(l:tmpBuffers[0], '"')
     let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
+    let s:bufferList = []
     for buf in l:tmpBuffers
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
