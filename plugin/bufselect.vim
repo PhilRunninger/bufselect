@@ -95,7 +95,7 @@ function! s:DisplayBuffers()   " {{{1
     execute 'silent buffer ' . s:bufferListNumber
     setlocal buftype=nofile noswapfile nonumber nowrap cursorline statusline=[Buffer\ List] syntax=bufselect
     setlocal modifiable
-    execute '%delete'
+    execute '%delete _'
     call setline(1, s:bufferList)
     call append(line('$'), [repeat('-',100), 'CWD: ' . getcwd()])
     call s:UpdateFooter()
