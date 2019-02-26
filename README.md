@@ -39,6 +39,8 @@ Default Key | Variable                  | Function
 **`v`**     | `g:BufSelectVSplit`       | Split the window vertically, and open the selected buffer there.
 **`x`**     | `g:BufSelectDeleteBuffer` | Close the selected buffer using vim's **`:bwipeout`** command.
 **`S`**     | `g:BufSelectSort`         | Change the sort order, cycling between **Number**, **Name**, and **Path**.
+**`cd`**    | `g:BufSelectChDir`        | Change the working directory to that of the selected buffer
+**`..`**    | `g:BufSelectChDirUp`      | Change the working directory up one level from current
 **`q`**     | `g:BufSelectExit`         | Exit the buffer list.
 **`?`**     |                           | Display short descriptions of these commands.
 

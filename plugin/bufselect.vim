@@ -23,6 +23,8 @@ let g:BufSelectKeyVSplit       = get(g:, 'BufSelectKeyVSplit',       'v')
 let g:BufSelectKeyDeleteBuffer = get(g:, 'BufSelectKeyDeleteBuffer', 'x')
 let g:BufSelectKeySort         = get(g:, 'BufSelectKeySort',         'S')
 let g:BufSelectSortOrder       = get(g:, 'BufSelectSortOrder',    'Name')
+let g:BufSelectChDir           = get(g:, 'BufSelectChDir',          'cd')
+let g:BufSelectChDirUp         = get(g:, 'BufSelectChDirUp',        '..')
 let s:sortOptions = ["Num", "Name", "Path"]
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
@@ -139,6 +141,8 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort." :call <SID>ChangeSort()\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectChDir." :call <SID>ChangeDir()\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectChDirUp." :call <SID>ChangeDirUp()<CR>"
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
     augroup BufSelectLinesBoundary
@@ -177,6 +181,17 @@ function! s:ChangeSort()   " {{{1
     call s:SetPosition(search('^\s*'.l:currBuffer.':', 'w'))
 endfunction
 
+function! s:ChangeDir()   " {{{1
+    let l:currBuffer = s:GetSelectedBuffer()
+    execute "cd ".fnamemodify(bufname(l:currBuffer), ':p:h')
+    call s:RefreshBufferList(line('.'))
+endfunction
+
+function! s:ChangeDirUp()   " {{{1
+    cd ..
+    call s:RefreshBufferList(line('.'))
+endfunction
+
 function! s:ShowHelp()   " {{{1
     echohl Special
     echomsg g:BufSelectKeyOpen.":Open   ".
@@ -184,6 +199,8 @@ function! s:ShowHelp()   " {{{1
           \ g:BufSelectKeyVSplit.":VSplit-Open   ".
           \ g:BufSelectKeyDeleteBuffer.":Delete Buffer   ".
           \ g:BufSelectKeySort.":Sort   ".
+          \ g:BufSelectChDir.":CD to folder   ".
+          \ g:BufSelectChDirUp.":CD up once   ".
           \ g:BufSelectKeyExit.":Exit"
     echohl None
 endfunction
