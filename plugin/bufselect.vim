@@ -97,7 +97,7 @@ function! s:DisplayBuffers()   " {{{1
     execute 'silent buffer ' . s:bufferListNumber
     setlocal buftype=nofile noswapfile nonumber nowrap cursorline statusline=[Buffer\ List] syntax=bufselect
     setlocal modifiable
-    execute '%delete _'
+    %delete _
     call setline(1, s:bufferList)
     call append(line('$'), [repeat('-',100), 'CWD: ' . getcwd()])
     call s:UpdateFooter()
@@ -106,7 +106,7 @@ endfunction
 
 function! s:SortBufferList()   " {{{1
     setlocal modifiable
-    execute '1,$-2sort'
+    1,$-2sort
     if g:BufSelectSortOrder == "Name" || g:BufSelectSortOrder == "Path"
         execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '/'
     endif
@@ -126,7 +126,7 @@ function! s:UpdateFooter()   " {{{1
 endfunction
 
 function! s:SetPosition(currentLine)   " {{{1
-    execute 'normal! gg0'
+    normal! gg0
     if a:currentLine != -1
         execute 'normal! '.a:currentLine.'gg0'
     elseif search('^\s*\d\+:\s*%', 'w') == 0
@@ -147,7 +147,7 @@ function! s:SetupCommands()   " {{{1
 
     augroup BufSelectLinesBoundary
         autocmd!
-        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | execute 'normal! G2k0' | endif
+        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | normal! G2k0 | endif
     augroup END
 endfunction
 
@@ -183,7 +183,7 @@ endfunction
 
 function! s:ChangeDir()   " {{{1
     let l:currBuffer = s:GetSelectedBuffer()
-    execute "cd ".fnamemodify(bufname(l:currBuffer), ':p:h')
+    execute 'cd '.fnamemodify(bufname(l:currBuffer), ':p:h')
     call s:RefreshBufferList(line('.'))
 endfunction
 
