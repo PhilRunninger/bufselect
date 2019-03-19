@@ -25,7 +25,7 @@ let g:BufSelectKeySort         = get(g:, 'BufSelectKeySort',         'S')
 let g:BufSelectSortOrder       = get(g:, 'BufSelectSortOrder',    'Name')
 let g:BufSelectChDir           = get(g:, 'BufSelectChDir',          'cd')
 let g:BufSelectChDirUp         = get(g:, 'BufSelectChDirUp',        '..')
-let s:sortOptions = ["Num", "Name", "Path"]
+let s:sortOptions = ["Num", "Name", "Extension", "Path"]
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
 
@@ -107,8 +107,11 @@ endfunction
 function! s:SortBufferList()   " {{{1
     setlocal modifiable
     1,$-2sort
-    if g:BufSelectSortOrder == "Name" || g:BufSelectSortOrder == "Path"
+    if g:BufSelectSortOrder == "Name" || g:BufSelectSortOrder == "Extension" || g:BufSelectSortOrder == "Path"
         execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '/'
+    endif
+    if g:BufSelectSortOrder == "Extension"
+        execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '.*\.\zs\S*\ze\s/ r'
     endif
     if g:BufSelectSortOrder == "Path"
         execute '1,$-2sort /^' . repeat('.', s:pathColumn-1) . '/'
@@ -118,7 +121,8 @@ endfunction
 
 function! s:UpdateFooter()   " {{{1
     let l:line = repeat(g:BufSelectSortOrder == "Num" ? '=' : '-', s:filenameColumn).
-               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn).
+               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn - 4).
+               \ repeat(g:BufSelectSortOrder == "Extension" ? '=' : '-', 4).
                \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
     setlocal modifiable
     call setline(line('$')-1, l:line)
