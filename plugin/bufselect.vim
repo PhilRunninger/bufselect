@@ -106,7 +106,7 @@ endfunction
 
 function! s:SortBufferList()   " {{{1
     setlocal modifiable
-    1,$-2sort
+    1,$-2sort n
     if g:BufSelectSortOrder == "Name" || g:BufSelectSortOrder == "Extension" || g:BufSelectSortOrder == "Path"
         execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '/'
     endif
