@@ -38,11 +38,14 @@ Default Key | Variable                  | Function
 **`s`**     | `g:BufSelectSplit`        | Split the window horizontally, and open the selected buffer there.
 **`v`**     | `g:BufSelectVSplit`       | Split the window vertically, and open the selected buffer there.
 **`x`**     | `g:BufSelectDeleteBuffer` | Close the selected buffer using vim's **`:bwipeout`** command.
-**`S`**     | `g:BufSelectSort`         | Change the sort order, cycling between **Number**, **Name**, **Extension**, and **Path**.
+**`S`**     | `g:BufSelectSort`         | Change the sort order, cycling between **Number**, **Status**, **Name**, **Extension**, and **Path**.
 **`cd`**    | `g:BufSelectChDir`        | Change the working directory to that of the selected buffer
 **`..`**    | `g:BufSelectChDirUp`      | Change the working directory up one level from current
 **`q`**     | `g:BufSelectExit`         | Exit the buffer list.
 **`?`**     |                           | Display short descriptions of these commands.
 
 ### Sort Order
-The default sort order can be set in the variable `g:BufSelectSortOrder`. The valid values are `"Num"`, `"Name"`, `"Extension"`, and `"Path"`, with `"Name"` being the default.
+The default sort order can be set in the variable `g:BufSelectSortOrder`. The valid values are `"Num"`, `"Status"`, `"Name"`, `"Extension"`, and `"Path"`, with `"Name"` being the default. `"Status"` refers to whether or not that buffer is loaded into Vim. See `:h :ls`.
+* `h` means the buffer is loaded and currently hidden.
+* `a` identifies the latest active buffer (not counting the Buffer List)
+* ` `(space) indicates a file that's been `:badd`ed to vim, but is not yet loaded.

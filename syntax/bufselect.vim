@@ -14,13 +14,15 @@
 "  GNU General Public License <http://www.gnu.org/licenses/>
 "  for more details."
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-syntax match BufSelectCWD /^CWD: .*/hs=s+5
+syntax match BufSelectSort /^Sort: \S*/hs=s+5
+syntax match BufSelectCWD /CWD: .*/hs=s+5
 syntax match BufSelectCurrentSort /=\+/
 syntax match BufSelectSeparator /^[-=]\+$/ contains=BufSelectCurrentSort
 syntax match BufSelectCurrBuffer /^\s*\d\+: %.*/
 syntax match BufSelectAltBuffer /^\s*\d\+: #.*/
 syntax match BufSelectUnsavedBuffer /^\s*\d\+: ...+.*/
 
+highlight link BufSelectSort Function
 highlight link BufSelectCWD TypeDef
 highlight link BufSelectCurrentSort Function
 highlight link BufSelectSeparator Tag
