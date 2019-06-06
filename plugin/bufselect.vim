@@ -153,6 +153,12 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectChDir." :call <SID>ChangeDir()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectChDirUp." :call <SID>ChangeDirUp()<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectSelectOpen." :call <SID>SelectOpenBuffers()<CR>"
+    let l:i = 0
+    while l:i < 10
+        execute "nnoremap <buffer> <silent> ".l:i." :call <SID>SelectByNumber(".l:i.")<CR>"
+        let l:i += 1
+    endwhile
+
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
     augroup BufSelectLinesBoundary
@@ -204,6 +210,10 @@ endfunction
 
 function! s:SelectOpenBuffers()   " {{{1
     call search('^\s*\d\+:\s*[%# ][ha]', 'w')
+endfunction
+
+function! s:SelectByNumber(num)   " {{{1
+    call search('^\s*\d*'.a:num.'\d*:', 'w')
 endfunction
 
 function! s:ShowHelp()   " {{{1
