@@ -66,7 +66,6 @@ function! s:FormatBufferNames()   " {{{1
     let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
     let s:filenameColumn = match(l:tmpBuffers[0], '"')
     let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
-    echomsg s:filenameColumn. ' '. s:pathColumn
     let s:bufferList = []
     for buf in l:tmpBuffers
         let bufferName = matchstr(buf, '"\zs.*\ze"')
@@ -85,7 +84,18 @@ endfunction
 function! s:DisplayBuffers()   " {{{1
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
     execute 'silent buffer ' . s:bufferListNumber
-    setlocal buftype=nofile noswapfile nonumber nowrap cursorline statusline=[Buffer\ List] syntax=bufselect
+    execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape(
+                \ "[Buffer List]  ".
+                \ g:BufSelectKeyOpen.":Open  ".
+                \ g:BufSelectKeySplit.":Split-Open  ".
+                \ g:BufSelectKeyVSplit.":VSplit-Open  ".
+                \ g:BufSelectKeyDeleteBuffer.":Delete buffer  ".
+                \ g:BufSelectKeySort.":Sort  ".
+                \ g:BufSelectKeyChDir.":CD to folder  ".
+                \ g:BufSelectKeyChDirUp.":CD up once  ".
+                \ g:BufSelectKeySelectOpen.":Select next open  ".
+                \ "0-9:Search by number  ".
+                \ g:BufSelectKeyExit.":Exit", " ")
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
@@ -148,8 +158,6 @@ function! s:SetupCommands()   " {{{1
         let l:i += 1
     endwhile
 
-    nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
-
     augroup BufSelectLinesBoundary
         autocmd!
         autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | normal! G2k0 | endif
@@ -206,17 +214,4 @@ function! s:SelectByNumber(num)   " {{{1
     while !search('^\s*\d*'.s:bufnrSearch.'\d*:', 'w') && s:bufnrSearch > 0
         let s:bufnrSearch = s:bufnrSearch % float2nr(pow(10,floor(log10(s:bufnrSearch))))
     endwhile
-endfunction
-
-function! s:ShowHelp()   " {{{1
-    echohl Special
-    echomsg g:BufSelectKeyOpen.":Open   ".
-          \ g:BufSelectKeySplit.":Split-Open   ".
-          \ g:BufSelectKeyVSplit.":VSplit-Open   ".
-          \ g:BufSelectKeyDeleteBuffer.":Delete Buffer   ".
-          \ g:BufSelectKeySort.":Sort   ".
-          \ g:BufSelectChDir.":CD to folder   ".
-          \ g:BufSelectChDirUp.":CD up once   ".
-          \ g:BufSelectKeyExit.":Exit"
-    echohl None
 endfunction
