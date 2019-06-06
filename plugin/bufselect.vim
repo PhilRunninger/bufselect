@@ -84,18 +84,7 @@ endfunction
 function! s:DisplayBuffers()   " {{{1
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
     execute 'silent buffer ' . s:bufferListNumber
-    execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape(
-                \ "[Buffer List]  ".
-                \ g:BufSelectKeyOpen.":Open  ".
-                \ g:BufSelectKeySplit.":Split-Open  ".
-                \ g:BufSelectKeyVSplit.":VSplit-Open  ".
-                \ g:BufSelectKeyDeleteBuffer.":Delete buffer  ".
-                \ g:BufSelectKeySort.":Sort  ".
-                \ g:BufSelectKeyChDir.":CD to folder  ".
-                \ g:BufSelectKeyChDirUp.":CD up once  ".
-                \ g:BufSelectKeySelectOpen.":Select next open  ".
-                \ "0-9:Search by number  ".
-                \ g:BufSelectKeyExit.":Exit", " ")
+    execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape("[Buffer List]  Press ? for Help", " ")
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
@@ -157,6 +146,7 @@ function! s:SetupCommands()   " {{{1
         execute "nnoremap <buffer> <silent> ".l:i." :call <SID>SelectByNumber(".l:i.")<CR>"
         let l:i += 1
     endwhile
+    nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
     augroup BufSelectLinesBoundary
         autocmd!
@@ -214,4 +204,19 @@ function! s:SelectByNumber(num)   " {{{1
     while !search('^\s*\d*'.s:bufnrSearch.'\d*:', 'w') && s:bufnrSearch > 0
         let s:bufnrSearch = s:bufnrSearch % float2nr(pow(10,floor(log10(s:bufnrSearch))))
     endwhile
+endfunction
+
+function! s:ShowHelp()   " {{{1
+    echohl Special
+    echomsg printf("%3s: Open the selected buffer in the current window.", g:BufSelectKeyOpen)
+    echomsg printf("%3s: Split the window horizontally, and open the selected buffer there.", g:BufSelectKeySplit)
+    echomsg printf("%3s: Split the window vertically, and open the selected buffer there.", g:BufSelectKeyVSplit)
+    echomsg printf("%3s: Close the selected buffer using vim's :bwipeout command.", g:BufSelectKeyDeleteBuffer)
+    echomsg printf("%3s: Change the sort order, cycling between Number, Status, Name, Extension, and Path.", g:BufSelectKeySort)
+    echomsg printf("%3s: Change the working directory to that of the selected buffer", g:BufSelectKeyChDir)
+    echomsg printf("%3s: Change the working directory up one level from current", g:BufSelectKeyChDirUp)
+    echomsg printf("%3s: Highlight (move cursor to) the next open buffer, those marked with h or a.", g:BufSelectKeySelectOpen)
+    echomsg printf("0-9: Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.")
+    echomsg printf("%3s: Exit the buffer list.", g:BufSelectKeyExit)
+    echohl None
 endfunction
