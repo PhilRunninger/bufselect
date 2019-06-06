@@ -25,6 +25,7 @@ let g:BufSelectKeySort         = get(g:, 'BufSelectKeySort',         'S')
 let g:BufSelectSortOrder       = get(g:, 'BufSelectSortOrder',    'Name')
 let g:BufSelectChDir           = get(g:, 'BufSelectChDir',          'cd')
 let g:BufSelectChDirUp         = get(g:, 'BufSelectChDirUp',        '..')
+let g:BufSelectSelectOpen      = get(g:, 'BufSelectSelectOpen',      '#')
 let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
@@ -151,6 +152,7 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort." :call <SID>ChangeSort()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectChDir." :call <SID>ChangeDir()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectChDirUp." :call <SID>ChangeDirUp()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSelectOpen." :call <SID>SelectOpenBuffers()<CR>"
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
     augroup BufSelectLinesBoundary
@@ -198,6 +200,10 @@ endfunction
 function! s:ChangeDirUp()   " {{{1
     cd ..
     call s:RefreshBufferList(line('.'))
+endfunction
+
+function! s:SelectOpenBuffers()   " {{{1
+    call search('^\s*\d\+:\s*[%# ][ha]', 'w')
 endfunction
 
 function! s:ShowHelp()   " {{{1
