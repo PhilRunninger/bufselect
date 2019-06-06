@@ -7,6 +7,9 @@ This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta
     * open buffers, including into splits (**`o`**, **`s`**, **`v`**)
     * delete buffers (**`x`**)
     * sort the list (**`S`**)
+    * change the working directory (**`..`**, **`cd`**)
+    * select open buffers in the list (**`#`**)
+    * select buffer by number (**`0`**...**`9`**)
 * a single command to kick things off (**`:ShowBufferList`**)
 * a non-persistent list of buffers. The buffer list is generated each time the command is called, rather than being maintained behind the scenes with autocommands. This simplifies the code considerably.
 
@@ -41,6 +44,8 @@ Default Key | Variable                  | Function
 **`S`**     | `g:BufSelectSort`         | Change the sort order, cycling between **Number**, **Status**, **Name**, **Extension**, and **Path**.
 **`cd`**    | `g:BufSelectChDir`        | Change the working directory to that of the selected buffer
 **`..`**    | `g:BufSelectChDirUp`      | Change the working directory up one level from current
+**`#`**     | `g:BufSelectSelectOpen`   | Move cursor to the next open buffer, those marked with `h` or `a`.
+**`0`**...**`9`** | n/a                 | Move cursor to the next buffer with this digit in its buffer number.
 **`q`**     | `g:BufSelectExit`         | Exit the buffer list.
 **`?`**     |                           | Display short descriptions of these commands.
 
