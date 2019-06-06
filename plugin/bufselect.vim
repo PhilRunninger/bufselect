@@ -31,6 +31,7 @@ let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
 
 function! s:ShowBufferList()
+    let s:bufnrSearch = 0
     let s:currBuffer = bufnr('%')
     let s:prevBuffer = bufnr('#')
     call s:RefreshBufferList(-1)
@@ -213,7 +214,11 @@ function! s:SelectOpenBuffers()   " {{{1
 endfunction
 
 function! s:SelectByNumber(num)   " {{{1
-    call search('^\s*\d*'.a:num.'\d*:', 'w')
+    let s:bufnrSearch = 10*s:bufnrSearch + a:num
+    if !search('^\s*\d*'.s:bufnrSearch.'\d*:', 'w')
+        let s:bufnrSearch = a:num
+        call search('^\s*\d*'.s:bufnrSearch.'\d*:', 'w')
+    endif
 endfunction
 
 function! s:ShowHelp()   " {{{1
