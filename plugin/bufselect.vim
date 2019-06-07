@@ -201,7 +201,7 @@ endfunction
 
 function! s:SelectByNumber(num)   " {{{1
     let s:bufnrSearch = 10*s:bufnrSearch + a:num
-    while !search('^\s*\d*'.s:bufnrSearch.'\d*:', 'w') && s:bufnrSearch > 0
+    while !search('^\s*'.s:bufnrSearch.':', 'w') && s:bufnrSearch > 0
         let s:bufnrSearch = s:bufnrSearch % float2nr(pow(10,floor(log10(s:bufnrSearch))))
     endwhile
 endfunction
