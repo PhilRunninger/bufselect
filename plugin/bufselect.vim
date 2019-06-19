@@ -84,7 +84,7 @@ endfunction
 function! s:DisplayBuffers()   " {{{1
     let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
     execute 'silent buffer ' . s:bufferListNumber
-    execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape("[Buffer List]  Press ? for Help", " ")
+    execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape("[Buffer List]  Press ? for key mappings.", " ")
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
@@ -207,16 +207,24 @@ function! s:SelectByNumber(num)   " {{{1
 endfunction
 
 function! s:ShowHelp()   " {{{1
-    echohl Special
-    echomsg printf("%3s: Open the selected buffer in the current window.", g:BufSelectKeyOpen)
-    echomsg printf("%3s: Split the window horizontally, and open the selected buffer there.", g:BufSelectKeySplit)
-    echomsg printf("%3s: Split the window vertically, and open the selected buffer there.", g:BufSelectKeyVSplit)
-    echomsg printf("%3s: Close the selected buffer using vim's :bwipeout command.", g:BufSelectKeyDeleteBuffer)
-    echomsg printf("%3s: Change the sort order, cycling between Number, Status, Name, Extension, and Path.", g:BufSelectKeySort)
-    echomsg printf("%3s: Change the working directory to that of the selected buffer", g:BufSelectKeyChDir)
-    echomsg printf("%3s: Change the working directory up one level from current", g:BufSelectKeyChDirUp)
-    echomsg printf("%3s: Highlight (move cursor to) the next open buffer, those marked with h or a.", g:BufSelectKeySelectOpen)
-    echomsg printf("0-9: Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.")
-    echomsg printf("%3s: Exit the buffer list.", g:BufSelectKeyExit)
+    let l:help = [
+                \ [g:BufSelectKeyOpen        , "Open the selected buffer in the current window."],
+                \ [g:BufSelectKeySplit       , "Split the window horizontally, and open the selected buffer there."],
+                \ [g:BufSelectKeyVSplit      , "Split the window vertically, and open the selected buffer there."],
+                \ [g:BufSelectKeyDeleteBuffer, "Close the selected buffer using vim's :bwipeout command."],
+                \ [g:BufSelectKeySort        , "Change the sort order, cycling between Number, Status, Name, Extension, and Path."],
+                \ [g:BufSelectKeyChDir       , "Change the working directory to that of the selected buffer"],
+                \ [g:BufSelectKeyChDirUp     , "Change the working directory up one level from current"],
+                \ [g:BufSelectKeySelectOpen  , "Highlight (move cursor to) the next open buffer, those marked with h or a."],
+                \ ["0-9"                     , "Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number."],
+                \ [g:BufSelectKeyExit        , "Exit the buffer list."]
+               \ ]
+    for key in l:help
+        echohl Identifier
+        echon printf("%3s", key[0])
+        echohl Normal
+        echon "  ".key[1]
+        echo ""
+    endfor
     echohl None
 endfunction
