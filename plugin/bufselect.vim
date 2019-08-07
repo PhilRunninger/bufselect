@@ -196,7 +196,7 @@ function! s:ChangeDirUp()   " {{{1
 endfunction
 
 function! s:SelectOpenBuffers()   " {{{1
-    call search('^\s*\d\+:\s*[%# ][ha]', 'w')
+    call search('^ *\d\+: [%# ][ha]', 'w')
 endfunction
 
 function! s:SelectByNumber(num)   " {{{1
