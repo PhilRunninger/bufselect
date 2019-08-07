@@ -4,7 +4,7 @@ This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta
 
 * a very clean list that shows the buffer number, filename, and relative path of the buffers you see in the `:ls` command
 * a few key mappings to do the following tasks:
-    * open buffers, including into splits (**`o`**, **`s`**, **`v`**)
+    * open buffers, including into splits or a new tab (**`o`**, **`s`**, **`v`**, **`t`**)
     * delete buffers (**`x`**)
     * sort the list (**`S`**)
     * change the working directory (**`..`**, **`cd`**)
@@ -41,6 +41,7 @@ Default Key       | Variable                     | Function
 **`o`**           | `g:BufSelectKeyOpen`         | Open the selected buffer in the current window.
 **`s`**           | `g:BufSelectKeySplit`        | Split the window horizontally, and open the selected buffer there.
 **`v`**           | `g:BufSelectKeyVSplit`       | Split the window vertically, and open the selected buffer there.
+**`t`**           | `g:BufSelectKeyTab`          | Open the selected buffer in a new tab.
 **`x`**           | `g:BufSelectKeyDeleteBuffer` | Close the selected buffer using vim's **`:bwipeout`** command.
 **`S`**           | `g:BufSelectKeySort`         | Change the sort order, cycling between **Number**, **Status**, **Name**, **Extension**, and **Path**.
 **`cd`**          | `g:BufSelectKeyChDir`        | Change the working directory to that of the selected buffer
