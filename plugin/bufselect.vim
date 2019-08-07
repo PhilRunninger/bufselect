@@ -7,6 +7,7 @@ let g:BufSelectKeyExit         = get(g:, 'BufSelectKeyExit',         'q')
 let g:BufSelectKeyOpen         = get(g:, 'BufSelectKeyOpen',         'o')
 let g:BufSelectKeySplit        = get(g:, 'BufSelectKeySplit',        's')
 let g:BufSelectKeyVSplit       = get(g:, 'BufSelectKeyVSplit',       'v')
+let g:BufSelectKeyTab          = get(g:, 'BufSelectKeyTab',          't')
 let g:BufSelectKeyDeleteBuffer = get(g:, 'BufSelectKeyDeleteBuffer', 'x')
 let g:BufSelectKeySort         = get(g:, 'BufSelectKeySort',         'S')
 let g:BufSelectSortOrder       = get(g:, 'BufSelectSortOrder',    'Name')
@@ -136,6 +137,7 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tabnew')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort." :call <SID>ChangeSort()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir." :call <SID>ChangeDir()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp." :call <SID>ChangeDirUp()<CR>"
@@ -211,6 +213,7 @@ function! s:ShowHelp()   " {{{1
                 \ [g:BufSelectKeyOpen        , "Open the selected buffer in the current window."],
                 \ [g:BufSelectKeySplit       , "Split the window horizontally, and open the selected buffer there."],
                 \ [g:BufSelectKeyVSplit      , "Split the window vertically, and open the selected buffer there."],
+                \ [g:BufSelectKeyTab         , "Open the selected buffer in a new tab."],
                 \ [g:BufSelectKeyDeleteBuffer, "Close the selected buffer using vim's :bwipeout command."],
                 \ [g:BufSelectKeySort        , "Change the sort order, cycling between Number, Status, Name, Extension, and Path."],
                 \ [g:BufSelectKeyChDir       , "Change the working directory to that of the selected buffer"],
