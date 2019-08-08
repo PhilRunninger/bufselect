@@ -170,7 +170,8 @@ function! s:CloseBuffer()   " {{{1
 endfunction
 
 function! s:ExitBufSelect()   "{{{1
-    if !bufexists(s:prevBuffer) && !bufexists(s:currBuffer)
+    if !(bufexists(s:prevBuffer) && buflisted(s:prevBuffer)) &&
+     \ !(bufexists(s:currBuffer) && buflisted(s:currBuffer))
         let s:currBuffer = s:GetSelectedBuffer()
     endif
     call s:SwitchBuffers(-1, '')
