@@ -65,7 +65,7 @@ endfunction
 function! s:FormatBufferNames()   " {{{1
     let l:tmpBuffers = s:CollectBufferNames()
     let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
-    let s:filenameColumn = match(l:tmpBuffers[0], '"')
+    let s:filenameColumn = 12
     let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
     let s:bufferList = []
     for buf in l:tmpBuffers
@@ -76,8 +76,9 @@ function! s:FormatBufferNames()   " {{{1
                                    \ fnamemodify(bufferName, ':t'),
                                    \ escape(fnamemodify(bufferName, ':h'), '\') )
         endif
-        let buf = substitute(buf, '^\(\s*\d\+\)', '\1:', "")  " Put colon after buffer number.
-        let buf = substitute(buf, '".*', bufferName, "")      " Replace quoted buffer name with parsed or unquoted buffer
+        let buf = substitute(buf, '^\(\s*\d\+\)', '    \1:', "")  " Put spaces before, and a colon after, the buffer number.
+        let buf = substitute(buf, '^\s*\(....\):', '\1:', "")     " Make buffer number column 4 digits.
+        let buf = substitute(buf, '".*', bufferName, "")          " Replace quoted buffer name with parsed or unquoted buffer
         call add(s:bufferList, buf)
     endfor
 endfunction
@@ -111,10 +112,10 @@ function! s:SortBufferList()   " {{{1
 endfunction
 
 function! s:UpdateFooter()   " {{{1
-    let l:line = (g:BufSelectSortOrder == "Num" ? '===---' : '------').
+    let l:line = (g:BufSelectSortOrder == "Num" ? '====---' : '-------').
                \ (g:BufSelectSortOrder == "Status" ? '=---' : '----').
-               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn - 4).
-               \ (g:BufSelectSortOrder == "Extension" ? '===-' : '----').
+               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn - 5).
+               \ (g:BufSelectSortOrder == "Extension" ? '===--' : '-----').
                \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
     setlocal modifiable
     call setline(line('$')-1, l:line)
