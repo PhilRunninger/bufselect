@@ -151,7 +151,7 @@ function! s:SetupCommands()   " {{{1
 
     augroup BufSelectLinesBoundary
         autocmd!
-        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | normal! G2k0 | endif
+        autocmd CursorMoved -=\[Buffers\]=- if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
     augroup END
 endfunction
 
