@@ -84,7 +84,7 @@ function! s:FormatBufferNames()   " {{{1
 endfunction
 
 function! s:DisplayBuffers()   " {{{1
-    let s:bufferListNumber = bufnr('-=[Buffers]=-', 1)
+    let s:bufferListNumber = bufnr('=Buffers=', 1)
     execute 'silent buffer ' . s:bufferListNumber
     execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape("[Buffer List]  Press ? for key mappings.", " ")
     setlocal modifiable
