@@ -90,7 +90,7 @@ function! s:DisplayBuffers()   " {{{1
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
-    call append(line('$'), [repeat('-',100), 'CWD: ' . fnamemodify(getcwd(),':~')])
+    call append(line('$'), ['', ''])
     call s:UpdateFooter()
     setlocal nomodifiable
 endfunction
