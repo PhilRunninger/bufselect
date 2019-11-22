@@ -74,7 +74,7 @@ function! s:FormatBufferNames()   " {{{1
             " Parse the bufferName into filename and path.
             let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %s',
                                    \ fnamemodify(bufferName, ':t'),
-                                   \ escape(fnamemodify(bufferName, ':h'), '\') )
+                                   \ escape(fnamemodify(bufferName, ':.:h'), '\') )
         endif
         let buf = substitute(buf, '^\(\s*\d\+\)', '    \1:', "")  " Put spaces before, and a colon after, the buffer number.
         let buf = substitute(buf, '^\s*\(....\):', '\1:', "")     " Make buffer number column 4 digits.
@@ -90,7 +90,7 @@ function! s:DisplayBuffers()   " {{{1
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
-    call append(line('$'), [repeat('-',100), 'CWD: ' . getcwd()])
+    call append(line('$'), [repeat('-',100), 'CWD: ' . fnamemodify(getcwd(),':~')])
     call s:UpdateFooter()
     setlocal nomodifiable
 endfunction
@@ -119,7 +119,7 @@ function! s:UpdateFooter()   " {{{1
                \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
     setlocal modifiable
     call setline(line('$')-1, l:line)
-    call setline(line('$'), printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, getcwd()))
+    call setline(line('$'), printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')))
     setlocal nomodifiable
 endfunction
 
