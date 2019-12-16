@@ -132,8 +132,8 @@ endfunction
 function! s:UpdateFooter()   " {{{1
     let l:line = (g:BufSelectSortOrder == "Num" ? '====---' : '-------').
                \ (g:BufSelectSortOrder == "Status" ? '=---' : '----').
-               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:pathColumn - s:filenameColumn - 5).
-               \ (g:BufSelectSortOrder == "Extension" ? '===--' : '-----').
+               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:extensionColumn - s:filenameColumn - 2). '--'.
+               \ repeat(g:BufSelectSortOrder == "Extension" ? '=' : '-', s:pathColumn - s:extensionColumn - 2). '--'.
                \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
     setlocal modifiable
     call setline(line('$')-1, l:line)
