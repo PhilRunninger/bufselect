@@ -122,7 +122,7 @@ function! s:SortBufferList()   " {{{1
     if g:BufSelectSortOrder == "Status"
         execute '1,$-2sort! /^\s*\d\+:..\zs.\ze/ r'
     elseif g:BufSelectSortOrder == "Extension"
-        execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '.*\.\zs\S*\ze\s/ r'
+        execute '1,$-2sort /^' . repeat('.', s:extensionColumn-1) . '/'
     elseif g:BufSelectSortOrder == "Path"
         execute '1,$-2sort /^' . repeat('.', s:pathColumn-1) . '/'
     endif
