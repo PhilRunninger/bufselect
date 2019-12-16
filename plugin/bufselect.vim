@@ -64,16 +64,34 @@ endfunction
 
 function! s:FormatBufferNames()   " {{{1
     let l:tmpBuffers = s:CollectBufferNames()
-    let l:filenameMaxLength = max(map(copy(l:tmpBuffers), 'strlen(fnamemodify(matchstr(v:val, "\"\\zs.*\\ze\""), ":t"))'))
-    let s:filenameColumn = 12
-    let s:pathColumn = s:filenameColumn + l:filenameMaxLength + 2
-    let s:bufferList = []
+    let l:filenames = []
+    let l:extensions = []
     for buf in l:tmpBuffers
+        let buf = fnamemodify(matchstr(buf, '"\zs.*\ze"'), ':t')
+        let parts = split(buf, '\.')
+        if len(parts) == 1
+            call add(l:filenames, buf)
+            call add(l:extensions, '')
+        else
+            call add(l:filenames, buf[0:(-2-strlen(parts[-1]))])
+            call add(l:extensions, parts[-1])
+        endif
+        let l:filenameMaxLength = max(map(copy(l:filenames), 'strlen(v:val)'))
+        let l:extensionMaxLength = max(map(copy(l:extensions), 'strlen(v:val)'))
+    endfor
+
+    let s:filenameColumn = 12
+    let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 2
+    let s:pathColumn = s:extensionColumn + l:extensionMaxLength + 2
+    let s:bufferList = []
+    for i in range(len(l:filenames))
+        let buf = l:tmpBuffers[i]
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
-            " Parse the bufferName into filename and path.
-            let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %s',
-                                   \ fnamemodify(bufferName, ':t'),
+            " Parse the bufferName into filename, extension, and path.
+            let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %-' . (l:extensionMaxLength) . 's  %s',
+                                   \ l:filenames[i],
+                                   \ l:extensions[i],
                                    \ escape(fnamemodify(bufferName, ':.:h'), '\') )
         endif
         let buf = substitute(buf, '^\(\s*\d\+\)', '    \1:', "")  " Put spaces before, and a colon after, the buffer number.
