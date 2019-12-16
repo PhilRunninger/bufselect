@@ -117,14 +117,14 @@ function! s:SortBufferList()   " {{{1
     setlocal modifiable
     1,$-2sort n
     if g:BufSelectSortOrder != "Num"
-        execute '1,$-2sort /^' . repeat('.', s:filenameColumn-1) . '/'
+        execute '1,$-2sort /^.\{' . (s:filenameColumn-1) . '}/'
     endif
     if g:BufSelectSortOrder == "Status"
         execute '1,$-2sort! /^\s*\d\+:..\zs.\ze/ r'
     elseif g:BufSelectSortOrder == "Extension"
-        execute '1,$-2sort /^' . repeat('.', s:extensionColumn-1) . '/'
+        execute '1,$-2sort /^.\{' . (s:extensionColumn-1) . '}/'
     elseif g:BufSelectSortOrder == "Path"
-        execute '1,$-2sort /^' . repeat('.', s:pathColumn-1) . '/'
+        execute '1,$-2sort /^.\{' . (s:pathColumn-1) . '}/'
     endif
     setlocal nomodifiable
 endfunction
