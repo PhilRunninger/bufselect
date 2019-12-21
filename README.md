@@ -4,8 +4,8 @@ This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta
 
 * a very clean list that shows the buffer number, filename, and relative path of the buffers you see in the `:ls` command
 * a few key mappings to do the following tasks:
-    * open buffers, including into splits or a new tab (**`o`**, **`s`**, **`v`**, **`t`**)
-    * delete buffers (**`x`**)
+    * open buffer, including into splits or a new tab (**`o`**, **`s`**, **`v`**, **`t`**)
+    * delete buffer from Vim (**`x`**)
     * sort the list (**`S`**)
     * change the working directory (**`..`**, **`cd`**)
     * highlight open buffers in the list (**`#`**)
@@ -56,4 +56,4 @@ The default sort order can be set in the variable `g:BufSelectSortOrder`. The va
 
 * `h` means the buffer is loaded and currently hidden.
 * `a` identifies the latest active buffer (not counting the Buffer List)
-* ` `(space) indicates a file that's been `:badd`ed to vim, but is not yet loaded.
+* ` `(space) indicates a file that's been `:badd`ed to vim, but is not yet loaded.
