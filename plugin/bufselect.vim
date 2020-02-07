@@ -19,6 +19,9 @@ let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
 
 function! s:ShowBufferList()
+    if bufname('%') ==# '=Buffers='
+        return
+    endif
     let s:bufnrSearch = 0
     let s:currBuffer = bufnr('%')
     let s:prevBuffer = bufnr('#')
