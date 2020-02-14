@@ -36,20 +36,20 @@ The mapping is not done by this plugin, so as not to interfere with any existing
 
 The following key mappings are used only within the **`[Buffer List]`** buffer. They are configurable by setting the corresponding global variables.
 
-Default Key       | Variable                     | Function
+Default Key | Variable | Function
 ---|---|---
-**`o`**           | `g:BufSelectKeyOpen`         | Open the selected buffer in the current window.
-**`s`**           | `g:BufSelectKeySplit`        | Split the window horizontally, and open the selected buffer there.
-**`v`**           | `g:BufSelectKeyVSplit`       | Split the window vertically, and open the selected buffer there.
-**`t`**           | `g:BufSelectKeyTab`          | Open the selected buffer in a new tab.
-**`x`**           | `g:BufSelectKeyDeleteBuffer` | Close the selected buffer using vim's **`:bwipeout`** command.
-**`S`**           | `g:BufSelectKeySort`         | Change the sort order, cycling between **Number**, **Status**, **Name**, **Extension**, and **Path**.
-**`cd`**          | `g:BufSelectKeyChDir`        | Change the working directory to that of the selected buffer
-**`..`**          | `g:BufSelectKeyChDirUp`      | Change the working directory up one level from current
-**`#`**           | `g:BufSelectKeySelectOpen`   | Highlight (move cursor to) the next open buffer, those marked with `h` or `a`. See `:h :ls`.
-**`0`**...**`9`** | *n/a*                        | Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.
-**`q`**           | `g:BufSelectKeyExit`         | Exit the buffer list.
-**`?`**           |                              | Display short descriptions of these commands.
+**`o`**<br>**`<CR>`** | `g:BufSelectKeyOpen`<br>*n/a* | Open the selected buffer in the current window. `<CR>` is unconfigurable.
+**`s`**               | `g:BufSelectKeySplit`         | Split the window horizontally, and open the selected buffer there.
+**`v`**               | `g:BufSelectKeyVSplit`        | Split the window vertically, and open the selected buffer there.
+**`t`**               | `g:BufSelectKeyTab`           | Open the selected buffer in a new tab.
+**`x`**               | `g:BufSelectKeyDeleteBuffer`  | Close the selected buffer using vim's **`:bwipeout`** command.
+**`S`**               | `g:BufSelectKeySort`          | Change the sort order, cycling between **Number**, **Status**, **Name**, **Extension**, and **Path**.
+**`cd`**              | `g:BufSelectKeyChDir`         | Change the working directory to that of the selected buffer
+**`..`**              | `g:BufSelectKeyChDirUp`       | Change the working directory up one level from current
+**`#`**               | `g:BufSelectKeySelectOpen`    | Highlight (move cursor to) the next open buffer, those marked with `h` or `a`. See `:h :ls`.
+**`0`**...**`9`**     | *n/a*                         | Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.
+**`q`**               | `g:BufSelectKeyExit`          | Exit the buffer list.
+**`?`**               |                               | Display short descriptions of these commands.
 
 ### Sort Order
 The default sort order can be set in the variable `g:BufSelectSortOrder`. The valid values are `"Num"`, `"Status"`, `"Name"`, `"Extension"`, and `"Path"`, with `"Name"` being the default. `"Status"` refers to whether or not that buffer is loaded into Vim. See `:h :ls`.
