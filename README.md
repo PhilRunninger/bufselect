@@ -15,13 +15,9 @@ This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta
 
 ## Installation
 
-Use your favorite plugin manager to install this plugin. My personal favorite is [vim-plug](https://github.com/junegunn/vim-plug). In your **`.vimrc`**, add the following line.
+Use your favorite plugin manager to install this plugin. [vim-pathogen](https://github.com/tpope/vim-pathogen), [Vundle.vim](https://github.com/VundleVim/Vundle.vim), [vim-plug](https://github.com/junegunn/vim-plug), [neobundle.vim](https://github.com/Shougo/neobundle.vim), and [dein.vim](https://github.com/Shougo/dein.vim) are some of the more popular ones. A lengthy discussion of these and other managers can be found on [vi.stackexchange.com](https://vi.stackexchange.com/questions/388/what-is-the-difference-between-the-vim-plugin-managers).
 
-```vim
-Plug 'git@github.com:PhilRunninger/bufselect.vim.git'
-```
-
-[Vundle](https://github.com/VundleVim/Vundle.vim), [pathogen](https://github.com/tpope/vim-pathogen), and others should also work as easily. Just follow the convention set up by the plugin manager of your choice.
+If you have no favorite, or want to manage your plugins without 3rd-party dependencies, I recommend using Vim 8 packages, as described in Greg Hurrell's excellent Youtube video: [Vim screencast #75: Plugin managers](http://img.youtube.com/vi/X2_R3uxDN6g/0.jpg)
 
 ## Command
 
@@ -47,7 +43,7 @@ Default Key | Variable | Function
 **`cd`**              | `g:BufSelectKeyChDir`         | Change the working directory to that of the selected buffer
 **`..`**              | `g:BufSelectKeyChDirUp`       | Change the working directory up one level from current
 **`#`**               | `g:BufSelectKeySelectOpen`    | Highlight (move cursor to) the next open buffer, those marked with `h` or `a`. See `:h :ls`.
-**`0`**...**`9`**     | *n/a*                         | Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.
+**`0`**...**`9`**     |                               | Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.
 **`q`**               | `g:BufSelectKeyExit`          | Exit the buffer list.
 **`?`**               |                               | Display short descriptions of these commands.
 
