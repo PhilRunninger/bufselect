@@ -225,8 +225,12 @@ endfunction
 
 function! s:SelectByNumber(num)   " {{{1
     let s:bufnrSearch = 10*s:bufnrSearch + a:num
-    while !search('^\s*'.s:bufnrSearch.':', 'w') && s:bufnrSearch > 0
-        let s:bufnrSearch = s:bufnrSearch % float2nr(pow(10,floor(log10(s:bufnrSearch))))
+    while !search('^\s*'.s:bufnrSearch.':', 'w')
+        " If not found, remove leading digit and search again.
+        if s:bufnrSearch < 10
+            break " but leave before removing the last digit.
+        endif
+        let s:bufnrSearch = str2nr(s:bufnrSearch[1:])
     endwhile
 endfunction
 
