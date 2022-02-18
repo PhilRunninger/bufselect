@@ -15,28 +15,29 @@ let g:BufSelectKeyChDir        = get(g:, 'BufSelectKeyChDir',       'cd')
 let g:BufSelectKeyChDirUp      = get(g:, 'BufSelectKeyChDirUp',     '..')
 let g:BufSelectKeySelectOpen   = get(g:, 'BufSelectKeySelectOpen',   '#')
 let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
-let s:bufferName = '=Buffers='
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
 
-function! s:ShowBufferList()
-    if bufname('%') ==# s:bufferName
+function! s:ShowBufferList(config = {})
+    if exists('s:alreadyRunning')
         return
     endif
+    let s:alreadyRunning = 1
     let s:bufnrSearch = 0
-    call s:OpenBufSelectWindow()
+    call s:OpenBufSelectWindow(a:config)
     call s:RefreshBufferList(-1)
 endfunction
 
-function! s:OpenBufSelectWindow()   " {{{1
-    let bufferListNumber = nvim_create_buf(0,1)
-    call nvim_buf_set_name(bufferListNumber, s:bufferName)
-    let s:bufferWin = nvim_open_win(bufferListNumber,1,{'relative':'cursor','width':80,'height':3,'row':1,'col':0,'border':'rounded','noautocmd':1,'style':'minimal'})
+function! s:OpenBufSelectWindow(config)   " {{{1
+    let scratch = nvim_create_buf(0,1)
+    let config = {'relative':'cursor', 'width':80, 'height':3, 'row':1, 'col':0, 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
+    let s:bufSelectWindow = nvim_open_win(scratch,1,extend(config, a:config, 'force'))
     setlocal syntax=bufselect nowrap bufhidden=wipe
 endfunction
 
 function! s:ExitBufSelect()   "{{{1
-    call nvim_win_hide(s:bufferWin)
+    call nvim_win_hide(s:bufSelectWindow)
+    unlet! s:alreadyRunning
 endfunction
 
 function! s:RefreshBufferList(currentLine)   " {{{1
@@ -103,8 +104,8 @@ function! s:DisplayBuffers()   " {{{1
     call setline(1, s:bufferList)
     call append(line('$'), ['', ''])
     call s:UpdateFooter()
-    call nvim_win_set_width(s:bufferWin, max(map(getline(1,line('$')-2)+[getline('$')],{_,l -> strchars(l)}))+1)
-    call nvim_win_set_height(s:bufferWin, line('$'))
+    call nvim_win_set_width(s:bufSelectWindow, max(map(getline(1,line('$')-2)+[getline('$')],{_,l -> strchars(l)}))+1)
+    call nvim_win_set_height(s:bufSelectWindow, line('$'))
     setlocal nomodifiable
 endfunction
 
@@ -177,19 +178,18 @@ function! s:GetSelectedBuffer()   " {{{1
 endfunction
 
 function! s:CloseBuffer()   " {{{1
+    let selected = s:GetSelectedBuffer()
+
     if len(s:CollectBufferNames()) == 1
         echo "Not gonna do it. The last buffer stays."
+    elseif empty(filter(nvim_tabpage_list_wins(0),{_,v -> v != s:bufSelectWindow && nvim_win_get_buf(v) != selected}))
+        let config = nvim_win_get_config(s:bufSelectWindow)
+        call s:ExitBufSelect()
+        execute 'bwipeout ' . selected
+        call s:ShowBufferList({'relative':config.relative, 'row':config.row, 'col':config.col})
     else
-        let selectedBuffer = s:GetSelectedBuffer()
-        if empty(filter(nvim_tabpage_list_wins(0),{_,v -> v != s:bufferWin && nvim_win_get_buf(v) != selectedBuffer}))
-            " The only non-floating window is the one whose buffer we're closing.
-            " Close BufSelect first and let the tab die with the buffer.
-            call s:ExitBufSelect()
-            execute 'bwipeout ' . selectedBuffer
-        else
-            execute 'bwipeout ' . selectedBuffer
-            call s:RefreshBufferList(line('.'))
-        endif
+        execute 'bwipeout ' . selected
+        call s:RefreshBufferList(line('.'))
     endif
 endfunction
 
