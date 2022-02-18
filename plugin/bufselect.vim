@@ -29,15 +29,14 @@ function! s:ShowBufferList()
 endfunction
 
 function! s:OpenBufSelectWindow()   " {{{1
-    setlocal syntax=bufselect nowrap modifiable
     let bufferListNumber = nvim_create_buf(0,1)
     call nvim_buf_set_name(bufferListNumber, s:bufferName)
     let s:bufferWin = nvim_open_win(bufferListNumber,1,{'relative':'cursor','width':80,'height':3,'row':1,'col':0,'border':'rounded','noautocmd':1,'style':'minimal'})
+    setlocal syntax=bufselect nowrap bufhidden=wipe
 endfunction
 
 function! s:ExitBufSelect()   "{{{1
-    call nvim_win_close(s:bufferWin,1)
-    call nvim_buf_delete(s:bufferListNumber, {'force':1})
+    call nvim_win_hide(s:bufferWin)
 endfunction
 
 function! s:RefreshBufferList(currentLine)   " {{{1
@@ -168,6 +167,7 @@ function! s:SetupCommands()   " {{{1
     augroup BufSelectLinesBoundary
         autocmd!
         autocmd CursorMoved <buffer> if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
+        autocmd WinLeave <buffer> call s:ExitBufSelect()
     augroup END
 endfunction
 
