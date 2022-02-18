@@ -78,14 +78,14 @@ function! s:FormatBufferNames()   " {{{1
     let l:extensionMaxLength = max(map(copy(l:extensions), {_,v -> strlen(v)}))
 
     let s:filenameColumn = 12
-    let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 1
-    let s:pathColumn = s:extensionColumn + l:extensionMaxLength + 1
+    let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 2
+    let s:pathColumn = s:extensionColumn + l:extensionMaxLength + 2
     let s:bufferList = []
     for i in range(len(l:filenames))
         let buf = l:tmpBuffers[i]
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
-            let bufferName = printf( '%-' . (l:filenameMaxLength) . 's %-' . (l:extensionMaxLength) . 's %s',
+            let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %-' . (l:extensionMaxLength) . 's  %s',
                                    \ l:filenames[i],
                                    \ l:extensions[i],
                                    \ escape(fnamemodify(bufferName, ':.:h'), '\') )
@@ -103,7 +103,7 @@ function! s:DisplayBuffers()   " {{{1
     call setline(1, s:bufferList)
     call append(line('$'), ['', ''])
     call s:UpdateFooter()
-    call nvim_win_set_width(s:bufferWin, max(map(getline(1,line('$')-2),{_,l -> strchars(l)}))+1)
+    call nvim_win_set_width(s:bufferWin, max(map(getline(1,line('$')-2)+[getline('$')],{_,l -> strchars(l)}))+1)
     call nvim_win_set_height(s:bufferWin, line('$'))
     setlocal nomodifiable
 endfunction
@@ -127,8 +127,8 @@ endfunction
 function! s:UpdateFooter()   " {{{1
     let l:line = (g:BufSelectSortOrder == "Num" ? '====---' : '-------').
                \ (g:BufSelectSortOrder == "Status" ? '=---' : '----').
-               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:extensionColumn - s:filenameColumn - 1). '-'.
-               \ repeat(g:BufSelectSortOrder == "Extension" ? '=' : '-', s:pathColumn - s:extensionColumn - 1). '-'.
+               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:extensionColumn - s:filenameColumn - 2). '--'.
+               \ repeat(g:BufSelectSortOrder == "Extension" ? '=' : '-', s:pathColumn - s:extensionColumn - 2). '--'.
                \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 300)
     setlocal modifiable
     call setline(line('$')-1, l:line)
