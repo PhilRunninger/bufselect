@@ -15,11 +15,12 @@ let g:BufSelectKeyChDir        = get(g:, 'BufSelectKeyChDir',       'cd')
 let g:BufSelectKeyChDirUp      = get(g:, 'BufSelectKeyChDirUp',     '..')
 let g:BufSelectKeySelectOpen   = get(g:, 'BufSelectKeySelectOpen',   '#')
 let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
+let s:bufferName = '=Buffers='
 
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
 
 function! s:ShowBufferList()
-    if bufname('%') ==# '=Buffers='
+    if bufname('%') ==# s:bufferName
         return
     endif
     let s:bufnrSearch = 0
@@ -28,10 +29,10 @@ function! s:ShowBufferList()
 endfunction
 
 function! s:OpenBufSelectWindow()   " {{{1
-    let s:bufferListNumber = nvim_create_buf(0,1)
-    call nvim_buf_set_name(s:bufferListNumber,'=Buffers=')
-    let s:bufferWin = nvim_open_win(s:bufferListNumber,1,{'relative':'cursor','width':80,'height':3,'row':1,'col':0,'border':'rounded','noautocmd':1,'style':'minimal'})
     setlocal syntax=bufselect nowrap modifiable
+    let bufferListNumber = nvim_create_buf(0,1)
+    call nvim_buf_set_name(bufferListNumber, s:bufferName)
+    let s:bufferWin = nvim_open_win(bufferListNumber,1,{'relative':'cursor','width':80,'height':3,'row':1,'col':0,'border':'rounded','noautocmd':1,'style':'minimal'})
 endfunction
 
 function! s:ExitBufSelect()   "{{{1
@@ -178,10 +179,18 @@ endfunction
 
 function! s:CloseBuffer()   " {{{1
     if len(s:CollectBufferNames()) == 1
-        echomsg "Not gonna do it. The last buffer stays."
+        echo "Not gonna do it. The last buffer stays."
     else
-        execute 'bwipeout ' . s:GetSelectedBuffer()
-        call s:RefreshBufferList(line('.'))
+        let selectedBuffer = s:GetSelectedBuffer()
+        if empty(filter(nvim_tabpage_list_wins(0),{_,v -> v != s:bufferWin && nvim_win_get_buf(v) != selectedBuffer}))
+            " The only non-floating window is the one whose buffer we're closing.
+            " Close BufSelect first and let the tab die with the buffer.
+            call s:ExitBufSelect()
+            execute 'bwipeout ' . selectedBuffer
+        else
+            execute 'bwipeout ' . selectedBuffer
+            call s:RefreshBufferList(line('.'))
+        endif
     endif
 endfunction
 
