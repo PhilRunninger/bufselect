@@ -19,13 +19,11 @@ let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
 command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
 
 function! s:ShowBufferList(config = {})
-    if exists('s:alreadyRunning')
-        return
+    if !exists('s:bufSelectWindow')
+        let s:bufnrSearch = 0
+        call s:OpenBufSelectWindow(a:config)
+        call s:RefreshBufferList(-1)
     endif
-    let s:alreadyRunning = 1
-    let s:bufnrSearch = 0
-    call s:OpenBufSelectWindow(a:config)
-    call s:RefreshBufferList(-1)
 endfunction
 
 function! s:OpenBufSelectWindow(config)   " {{{1
@@ -37,7 +35,7 @@ endfunction
 
 function! s:ExitBufSelect()   "{{{1
     call nvim_win_hide(s:bufSelectWindow)
-    unlet! s:alreadyRunning
+    unlet! s:bufSelectWindow
 endfunction
 
 function! s:RefreshBufferList(currentLine)   " {{{1
