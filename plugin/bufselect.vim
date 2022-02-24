@@ -27,9 +27,8 @@ function! s:ShowBufferList(config = {})
 endfunction
 
 function! s:OpenBufSelectWindow(config)   " {{{1
-    let scratch = nvim_create_buf(0,1)
     let config = {'relative':'cursor', 'width':80, 'height':3, 'row':1, 'col':0, 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
-    let s:bufSelectWindow = nvim_open_win(scratch,1,extend(config, a:config, 'force'))
+    let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,extend(config, a:config, 'force'))
     setlocal syntax=bufselect nowrap bufhidden=wipe
 endfunction
 
@@ -54,8 +53,7 @@ function! s:SwitchBuffers(buffer, windowCmd)   " {{{1
 endfunction
 
 function! s:CollectBufferNames()   " {{{1
-    let l:tmpBuffers = split(execute('buffers'), '\n')
-    return filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
+    return filter(split(execute('buffers'), '\n'), 'v:val !~? "\\(Location\\|Quickfix\\) List"')
 endfunction
 
 function! s:FormatBufferNames()   " {{{1
