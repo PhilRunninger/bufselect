@@ -16,21 +16,7 @@ let g:BufSelectKeyChDirUp      = get(g:, 'BufSelectKeyChDirUp',     '..')
 let g:BufSelectKeySelectOpen   = get(g:, 'BufSelectKeySelectOpen',   '#')
 let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
 
-command! ShowBufferList :call <SID>ShowBufferList()   " {{{1
-
-function! s:ShowBufferList(config = {})
-    if !exists('s:bufSelectWindow')
-        let s:bufnrSearch = 0
-        call s:OpenBufSelectWindow(a:config)
-        call s:RefreshBufferList(-1)
-    endif
-endfunction
-
-function! s:OpenBufSelectWindow(config)   " {{{1
-    let config = {'relative':'cursor', 'width':80, 'height':3, 'row':1, 'col':0, 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
-    let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,extend(config, a:config, 'force'))
-    setlocal syntax=bufselect nowrap bufhidden=wipe
-endfunction
+command! ShowBufferList :call <SID>RefreshBufferList(-1)   " {{{1
 
 function! s:ExitBufSelect()   "{{{1
     call nvim_win_hide(s:bufSelectWindow)
@@ -94,14 +80,30 @@ function! s:FormatBufferNames()   " {{{1
     endfor
 endfunction
 
+function! s:OpenBufSelectWindow(width, height)   " {{{1
+    if !exists('s:bufSelectWindow')
+        let hostWidth = nvim_win_get_width(0)
+        let hostHeight = nvim_win_get_height(0)
+        let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
+                    \ 'height':a:height, 'width':a:width,
+                    \ 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
+        let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
+        setlocal syntax=bufselect nowrap bufhidden=wipe
+        let s:bufnrSearch = 0
+    endif
+endfunction
+
 function! s:DisplayBuffers()   " {{{1
+    let footer = s:Footer()
+    let width = max(map(s:bufferList+[footer[1]],{_,l -> strchars(l)}))+1
+    let height = len(s:bufferList)+2
+    call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
-    call append(line('$'), ['', ''])
-    call s:UpdateFooter()
-    call nvim_win_set_width(s:bufSelectWindow, max(map(getline(1,line('$')-2)+[getline('$')],{_,l -> strchars(l)}))+1)
-    call nvim_win_set_height(s:bufSelectWindow, line('$'))
+    call append(line('$'), footer)
+    call nvim_win_set_width(s:bufSelectWindow, width)
+    call nvim_win_set_height(s:bufSelectWindow, height)
     setlocal nomodifiable
 endfunction
 
@@ -121,19 +123,28 @@ function! s:SortBufferList()   " {{{1
     setlocal nomodifiable
 endfunction
 
+function! s:Footer()   " {{{1
+    return [
+            \ (g:BufSelectSortOrder == "Num" ? '▀▀▀▀▔▔▔' : '▔▔▔▔▔▔▔').
+            \ (g:BufSelectSortOrder == "Status" ? '▀▔▔▔' : '▔▔▔▔').
+            \ repeat(g:BufSelectSortOrder == "Name" ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2). '▔▔'.
+            \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2). '▔▔'.
+            \ repeat(g:BufSelectSortOrder == "Path" ? '▀' : '▔', 300)
+            \ ,
+            \ printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~'))
+         \ ]
+endfunction
+
 function! s:UpdateFooter()   " {{{1
-    let l:line = (g:BufSelectSortOrder == "Num" ? '▀▀▀▀▔▔▔' : '▔▔▔▔▔▔▔').
-               \ (g:BufSelectSortOrder == "Status" ? '▀▔▔▔' : '▔▔▔▔').
-               \ repeat(g:BufSelectSortOrder == "Name" ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2). '▔▔'.
-               \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2). '▔▔'.
-               \ repeat(g:BufSelectSortOrder == "Path" ? '▀' : '▔', 300)
     setlocal modifiable
-    call setline(line('$')-1, l:line)
-    call setline(line('$'), printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')))
+    let footer = s:Footer()
+    call setline(line('$')-1, footer[0])
+    call setline(line('$'), footer[1])
     setlocal nomodifiable
 endfunction
 
 function! s:SetPosition(currentLine)   " {{{1
+  echomsg "SetPosition(".a:currentLine.")"
     normal! gg0
     if a:currentLine != -1
         execute 'normal! '.a:currentLine.'gg0'
@@ -174,19 +185,16 @@ function! s:GetSelectedBuffer()   " {{{1
 endfunction
 
 function! s:CloseBuffer()   " {{{1
-    let selected = s:GetSelectedBuffer()
-
     if len(s:CollectBufferNames()) == 1
         echo "Not gonna do it. The last buffer stays."
-    elseif empty(filter(nvim_tabpage_list_wins(0),{_,v -> v != s:bufSelectWindow && nvim_win_get_buf(v) != selected}))
-        let config = nvim_win_get_config(s:bufSelectWindow)
-        call s:ExitBufSelect()
-        execute 'bwipeout ' . selected
-        call s:ShowBufferList({'relative':config.relative, 'row':config.row, 'col':config.col})
-    else
-        execute 'bwipeout ' . selected
-        call s:RefreshBufferList(line('.'))
+        return
     endif
+
+    let selected = s:GetSelectedBuffer()
+    let currentLine = line('.')
+    call s:ExitBufSelect()
+    execute 'bwipeout ' . selected
+    call s:RefreshBufferList(currentLine)
 endfunction
 
 function! s:ChangeSort()   " {{{1
