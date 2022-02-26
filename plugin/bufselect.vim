@@ -124,15 +124,13 @@ function! s:SortBufferList()   " {{{1
 endfunction
 
 function! s:Footer()   " {{{1
-    return [
-            \ (g:BufSelectSortOrder == "Num" ? '▀▀▀▀▔▔▔' : '▔▔▔▔▔▔▔').
-            \ (g:BufSelectSortOrder == "Status" ? '▀▔▔▔' : '▔▔▔▔').
-            \ repeat(g:BufSelectSortOrder == "Name" ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2). '▔▔'.
-            \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2). '▔▔'.
-            \ repeat(g:BufSelectSortOrder == "Path" ? '▀' : '▔', 300)
-            \ ,
-            \ printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~'))
-         \ ]
+    return [ printf('%s▔▔▔%s▔▔▔%s▔▔%s▔▔%s',
+                \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 4),
+                \ repeat(g:BufSelectSortOrder == "Status"    ? '▀' : '▔', 1),
+                \ repeat(g:BufSelectSortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
+                \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
+                \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
+           \ printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
 endfunction
 
 function! s:UpdateFooter()   " {{{1
@@ -144,7 +142,6 @@ function! s:UpdateFooter()   " {{{1
 endfunction
 
 function! s:SetPosition(currentLine)   " {{{1
-  echomsg "SetPosition(".a:currentLine.")"
     normal! gg0
     if a:currentLine != -1
         execute 'normal! '.a:currentLine.'gg0'
