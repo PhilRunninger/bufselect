@@ -163,7 +163,7 @@ function! s:SetupCommands()   " {{{1
     augroup BufSelectLinesBoundary
         autocmd!
         autocmd CursorMoved <buffer> if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
-        autocmd WinLeave <buffer> call s:ExitBufSelect()
+        autocmd BufLeave <buffer> call s:ExitBufSelect()
     augroup END
 endfunction
 
