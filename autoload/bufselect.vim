@@ -78,14 +78,13 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
 endfunction
 
 function! s:DisplayBuffers()   " {{{1
-    let footer = s:Footer()
-    let width = max(map(s:bufferList+[footer[1]],{_,l -> strchars(l)}))+1
+    let width = max(map(s:bufferList+[s:Footer()[1]],{_,l -> strchars(l)}))+1
     let height = len(s:bufferList)+2
     call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
-    call append(line('$'), footer)
+    call append(line('$'), s:Footer())
     call nvim_win_set_width(s:bufSelectWindow, width)
     call nvim_win_set_height(s:bufSelectWindow, height)
     setlocal nomodifiable
@@ -119,9 +118,8 @@ endfunction
 
 function! s:UpdateFooter()   " {{{1
     setlocal modifiable
-    let footer = s:Footer()
-    call setline(line('$')-1, footer[0])
-    call setline(line('$'), footer[1])
+    call setline(line('$')-1, s:Footer()[0])
+    call setline(line('$'), s:Footer()[1])
     setlocal nomodifiable
 endfunction
 
