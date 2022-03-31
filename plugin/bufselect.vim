@@ -43,20 +43,19 @@ function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
     let old_ei = &eventignore
     set eventignore=all
 
-    call s:SwitchBuffer(s:prevBuffer)
+    call s:SwitchBuffer('buffer', s:prevBuffer)
 
-    if s:currBuffer != a:nextBuffer
-        call s:SwitchBuffer(s:currBuffer)
+    if s:currBuffer != a:nextBuffer || a:windowCmd !=? 'buffer'
+        call s:SwitchBuffer('buffer', s:currBuffer)
     endif
 
     let &eventignore = old_ei
-    execute a:windowCmd
-    call s:SwitchBuffer(a:nextBuffer)
+    call s:SwitchBuffer(a:windowCmd, a:nextBuffer)
 endfunction
 
-function! s:SwitchBuffer(buffer)
+function! s:SwitchBuffer(windowCmd, buffer)
     if bufexists(a:buffer)
-        execute 'buffer ' . a:buffer
+        execute a:windowCmd . ' ' . a:buffer
     endif
 endfunction
 
@@ -155,11 +154,11 @@ endfunction
 
 function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit." :call <SID>ExitBufSelect()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
-    execute "nnoremap <buffer> <silent> <CR> :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), '')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd s')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'wincmd v')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tabnew')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')\<CR>"
+    execute "nnoremap <buffer> <silent> <CR> :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer')\<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer')\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort." :call <SID>ChangeSort()\<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir." :call <SID>ChangeDir()\<CR>"
