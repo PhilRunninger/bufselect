@@ -2,18 +2,7 @@
 "
 " BufSelect - a Vim buffer selection and deletion utility
 
-function! bufselect#ShowBufferList()
-    if bufname('%') ==# '=Buffers='
-        return
-    endif
-    let s:bufnrSearch = 0
-    let s:currBuffer = bufnr('%')
-    let s:prevBuffer = bufnr('#')
-    call s:RefreshBufferList(-1)
-endfunction
-
-function! s:RefreshBufferList(currentLine)   " {{{1
-    call s:SwitchBuffers(-1, '')
+function! bufselect#RefreshBufferList(currentLine)   " {{{1
     call s:FormatBufferNames()
     call s:DisplayBuffers()
     call s:SortBufferList()
@@ -21,31 +10,20 @@ function! s:RefreshBufferList(currentLine)   " {{{1
     call s:SetupCommands()
 endfunction
 
-function! s:SwitchBuffers(nextBuffer, windowCmd)   " {{{1
-    " Switch to the prev, curr, and next buffer in that order (if they exist)
-    " to preserve or recalculate the # and % buffers.
-    let old_ei = &eventignore
-    set eventignore=all
-
-    call s:SwitchBuffer('buffer', s:prevBuffer)
-
-    if s:currBuffer != a:nextBuffer || a:windowCmd !=? 'buffer'
-        call s:SwitchBuffer('buffer', s:currBuffer)
-    endif
-
-    let &eventignore = old_ei
-    call s:SwitchBuffer(a:windowCmd, a:nextBuffer)
+function! s:ExitBufSelect()   "{{{1
+    call nvim_win_hide(s:bufSelectWindow)
+    unlet! s:bufSelectWindow
 endfunction
 
-function! s:SwitchBuffer(windowCmd, buffer)
+function! s:SwitchBuffers(buffer, windowCmd)   " {{{1
+    call s:ExitBufSelect()
     if bufexists(a:buffer)
-        execute a:windowCmd . ' ' . a:buffer
+        execute a:windowCmd . a:buffer
     endif
 endfunction
 
 function! s:CollectBufferNames()   " {{{1
-    let l:tmpBuffers = split(execute('buffers'), '\n')
-    return filter(l:tmpBuffers, 'v:val !~? "\\(Location\\|Quickfix\\) List"')
+    return filter(split(execute('buffers'), '\n'), 'v:val !~? "\\(Location\\|Quickfix\\) List"')
 endfunction
 
 function! s:FormatBufferNames()   " {{{1
@@ -59,12 +37,12 @@ function! s:FormatBufferNames()   " {{{1
             call add(l:filenames, buf)
             call add(l:extensions, '')
         else
-            call add(l:filenames, buf[0:(-2-strlen(parts[-1]))])
+            call add(l:filenames, strcharpart(buf,0, strchars(buf)-strchars(parts[-1])-1))
             call add(l:extensions, parts[-1])
         endif
-        let l:filenameMaxLength = max(map(copy(l:filenames), 'strlen(v:val)'))
-        let l:extensionMaxLength = max(map(copy(l:extensions), 'strlen(v:val)'))
     endfor
+    let l:filenameMaxLength = max(map(copy(l:filenames), {_,v -> strlen(v)}))
+    let l:extensionMaxLength = max(map(copy(l:extensions), {_,v -> strlen(v)}))
 
     let s:filenameColumn = 12
     let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 2
@@ -74,7 +52,6 @@ function! s:FormatBufferNames()   " {{{1
         let buf = l:tmpBuffers[i]
         let bufferName = matchstr(buf, '"\zs.*\ze"')
         if filereadable(fnamemodify(bufferName, ':p'))
-            " Parse the bufferName into filename, extension, and path.
             let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %-' . (l:extensionMaxLength) . 's  %s',
                                    \ l:filenames[i],
                                    \ l:extensions[i],
@@ -87,15 +64,29 @@ function! s:FormatBufferNames()   " {{{1
     endfor
 endfunction
 
+function! s:OpenBufSelectWindow(width, height)   " {{{1
+    if !exists('s:bufSelectWindow')
+        let hostWidth = nvim_win_get_width(0)
+        let hostHeight = nvim_win_get_height(0)
+        let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
+                    \ 'height':a:height, 'width':a:width,
+                    \ 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
+        let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
+        setlocal syntax=bufselect nowrap bufhidden=wipe
+        let s:bufnrSearch = 0
+    endif
+endfunction
+
 function! s:DisplayBuffers()   " {{{1
-    let s:bufferListNumber = bufnr('=Buffers=', 1)
-    execute 'silent buffer ' . s:bufferListNumber
-    execute 'setlocal buftype=nofile noswapfile nonumber nowrap cursorline syntax=bufselect statusline='.escape("[Buffer List]  Press ? for key mappings.", " ")
+    let width = max(map(s:bufferList+[s:Footer()[1]],{_,l -> strchars(l)}))+1
+    let height = len(s:bufferList)+2
+    call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
     %delete _
     call setline(1, s:bufferList)
-    call append(line('$'), ['', ''])
-    call s:UpdateFooter()
+    call append(line('$'), s:Footer())
+    call nvim_win_set_width(s:bufSelectWindow, width)
+    call nvim_win_set_height(s:bufSelectWindow, height)
     setlocal nomodifiable
 endfunction
 
@@ -115,15 +106,20 @@ function! s:SortBufferList()   " {{{1
     setlocal nomodifiable
 endfunction
 
+function! s:Footer()   " {{{1
+    return [ printf('%s▔▔▔%s▔▔▔%s▔▔%s▔▔%s',
+                \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 4),
+                \ repeat(g:BufSelectSortOrder == "Status"    ? '▀' : '▔', 1),
+                \ repeat(g:BufSelectSortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
+                \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
+                \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
+           \ printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
+endfunction
+
 function! s:UpdateFooter()   " {{{1
-    let l:line = (g:BufSelectSortOrder == "Num" ? '====---' : '-------').
-               \ (g:BufSelectSortOrder == "Status" ? '=---' : '----').
-               \ repeat(g:BufSelectSortOrder == "Name" ? '=' : '-', s:extensionColumn - s:filenameColumn - 2). '--'.
-               \ repeat(g:BufSelectSortOrder == "Extension" ? '=' : '-', s:pathColumn - s:extensionColumn - 2). '--'.
-               \ repeat(g:BufSelectSortOrder == "Path" ? '=' : '-', 100 - s:pathColumn)
     setlocal modifiable
-    call setline(line('$')-1, l:line)
-    call setline(line('$'), printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')))
+    call setline(line('$')-1, s:Footer()[0])
+    call setline(line('$'), s:Footer()[1])
     setlocal nomodifiable
 endfunction
 
@@ -156,7 +152,8 @@ function! s:SetupCommands()   " {{{1
 
     augroup BufSelectLinesBoundary
         autocmd!
-        autocmd CursorMoved =Buffers= if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
+        autocmd CursorMoved <buffer> if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
+        autocmd BufLeave <buffer> call s:ExitBufSelect()
     augroup END
 endfunction
 
@@ -168,23 +165,20 @@ endfunction
 
 function! s:CloseBuffer()   " {{{1
     if len(s:CollectBufferNames()) == 1
-        echomsg "Not gonna do it. The last buffer stays."
-    else
-        execute 'bwipeout ' . s:GetSelectedBuffer()
-        call s:RefreshBufferList(line('.'))
+        echo "Not gonna do it. The last buffer stays."
+        return
     endif
-endfunction
 
-function! s:ExitBufSelect()   "{{{1
-    if !(bufexists(s:prevBuffer) && buflisted(s:prevBuffer)) &&
-     \ !(bufexists(s:currBuffer) && buflisted(s:currBuffer))
-        let s:currBuffer = s:GetSelectedBuffer()
-    endif
-    call s:SwitchBuffers(-1, '')
+    let selected = s:GetSelectedBuffer()
+    let currentLine = line('.')
+    call s:ExitBufSelect()
+    execute 'bwipeout ' . selected
+    call bufselect#RefreshBufferList(currentLine)
 endfunction
 
 function! s:ChangeSort()   " {{{1
-    let g:BufSelectSortOrder = s:sortOptions[(index(s:sortOptions, g:BufSelectSortOrder) + 1) % len(s:sortOptions)]
+    let sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
+    let g:BufSelectSortOrder = sortOptions[(index(sortOptions, g:BufSelectSortOrder) + 1) % len(sortOptions)]
     let l:currBuffer = s:GetSelectedBuffer()
     call s:SortBufferList()
     call s:UpdateFooter()
@@ -194,12 +188,12 @@ endfunction
 function! s:ChangeDir()   " {{{1
     let l:currBuffer = s:GetSelectedBuffer()
     execute 'cd '.fnamemodify(bufname(l:currBuffer), ':p:h')
-    call s:RefreshBufferList(line('.'))
+    call bufselect#RefreshBufferList(line('.'))
 endfunction
 
 function! s:ChangeDirUp()   " {{{1
     cd ..
-    call s:RefreshBufferList(line('.'))
+    call bufselect#RefreshBufferList(line('.'))
 endfunction
 
 function! s:SelectOpenBuffers()   " {{{1

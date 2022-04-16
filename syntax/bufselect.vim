@@ -2,8 +2,8 @@
 
 syntax match BufSelectSort /^Sort: \S*/hs=s+5
 syntax match BufSelectCWD /CWD: .*/hs=s+5
-syntax match BufSelectCurrentSort /=\+/
-syntax match BufSelectSeparator /^[-=]\+$/ contains=BufSelectCurrentSort
+syntax match BufSelectCurrentSort /▀\+/
+syntax match BufSelectSeparator /^[▀▔]\+$/ contains=BufSelectCurrentSort
 syntax match BufSelectCurrBuffer /^\s*\d\+: %.*/
 syntax match BufSelectAltBuffer /^\s*\d\+: #.*/
 syntax match BufSelectUnsavedBuffer /^\s*\d\+: ...+.*/

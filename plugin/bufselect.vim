@@ -12,6 +12,5 @@ let g:BufSelectSortOrder       = get(g:, 'BufSelectSortOrder',    'Name')
 let g:BufSelectKeyChDir        = get(g:, 'BufSelectKeyChDir',       'cd')
 let g:BufSelectKeyChDirUp      = get(g:, 'BufSelectKeyChDirUp',     '..')
 let g:BufSelectKeySelectOpen   = get(g:, 'BufSelectKeySelectOpen',   '#')
-let s:sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
 
-command! ShowBufferList :call bufselect#ShowBufferList()   " {{{1
+command! ShowBufferList :call bufselect#RefreshBufferList(-1)
