@@ -72,7 +72,7 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
                     \ 'height':a:height, 'width':a:width,
                     \ 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
         let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
-        setlocal syntax=bufselect nowrap bufhidden=wipe
+        setlocal syntax=bufselect nowrap bufhidden=wipe cursorline
         let s:bufnrSearch = 0
     endif
 endfunction
