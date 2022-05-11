@@ -27,54 +27,37 @@ function! s:CollectBufferNames()   " {{{1
 endfunction
 
 function! s:FormatBufferNames()   " {{{1
-    let l:tmpBuffers = s:CollectBufferNames()
-    let l:filenames = []
-    let l:extensions = []
-    for buf in l:tmpBuffers
-        let buf = fnamemodify(matchstr(buf, '"\zs.*\ze"'), ':t')
-        let parts = split(buf, '\.')
-        if len(parts) == 1
-            call add(l:filenames, buf)
-            call add(l:extensions, '')
-        else
-            call add(l:filenames, strcharpart(buf,0, strchars(buf)-strchars(parts[-1])-1))
-            call add(l:extensions, parts[-1])
-        endif
-    endfor
-    let l:filenameMaxLength = max(map(copy(l:filenames), {_,v -> strlen(v)}))
-    let l:extensionMaxLength = max(map(copy(l:extensions), {_,v -> strlen(v)}))
+    let s:bufferList = map(s:CollectBufferNames(), {_,v -> {'origin':v, 'buffer':matchstr(v,'"\zs.*\ze"')}})
+    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':v.buffer, 'filename':fnamemodify(v.buffer,':t')}})
+    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':v.buffer, 'filename':v.filename, 'parts': split(v.filename, '\.')}})
+    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':v.buffer, 'filename':len(v.parts)==1?v.filename:strcharpart(v.filename,0,strchars(v.filename)-strchars(v.parts[-1])-1), 'extension':len(v.parts)==1?'':v.parts[-1]}})
 
-    let s:filenameColumn = 12
+    let l:filenameMaxLength = max(map(copy(s:bufferList), {_,v -> strchars(v.filename)}))
+    let l:extensionMaxLength = max(map(copy(s:bufferList), {_,v -> strchars(v.extension)}))
+
+    let s:filenameColumn = 13
     let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 2
     let s:pathColumn = s:extensionColumn + l:extensionMaxLength + 2
-    let s:bufferList = []
-    for i in range(len(l:filenames))
-        let buf = l:tmpBuffers[i]
-        let bufferName = matchstr(buf, '"\zs.*\ze"')
-        if filereadable(fnamemodify(bufferName, ':p'))
-            let bufferName = printf( '%-' . (l:filenameMaxLength) . 's  %-' . (l:extensionMaxLength) . 's  %s',
-                                   \ l:filenames[i],
-                                   \ l:extensions[i],
-                                   \ escape(fnamemodify(bufferName, ':.:h'), '\') )
-        endif
-        let buf = substitute(buf, '^\(\s*\d\+\)', '    \1:', "")  " Put spaces before, and a colon after, the buffer number.
-        let buf = substitute(buf, '^\s*\(....\):', '\1:', "")     " Make buffer number column 4 digits.
-        let buf = substitute(buf, '".*', bufferName, "")          " Replace quoted buffer name with parsed or unquoted buffer
-        call add(s:bufferList, buf)
-    endfor
+
+    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':filereadable(fnamemodify(v.buffer,':p')) ?
+                \ printf( '%-*s  %-*s  %s', l:filenameMaxLength, v.filename, l:extensionMaxLength, v.extension, escape(fnamemodify(v.buffer, ':.:h'), '\') ) :
+                \ v.buffer}})
+    call map(s:bufferList, {_,v -> substitute(substitute('    '.v.origin, '^\s*\([ 0-9]\{4}\d\)\s','\1: ',''), '".*', v.buffer, '')})
 endfunction
 
 function! s:OpenBufSelectWindow(width, height)   " {{{1
-    if !exists('s:bufSelectWindow')
-        let hostWidth = nvim_win_get_width(0)
-        let hostHeight = nvim_win_get_height(0)
-        let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
-                    \ 'height':a:height, 'width':a:width,
-                    \ 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
-        let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
-        setlocal syntax=bufselect nowrap bufhidden=wipe cursorline
-        let s:bufnrSearch = 0
+    if exists('s:bufSelectWindow')
+        return
     endif
+
+    let hostWidth = nvim_win_get_width(0)
+    let hostHeight = nvim_win_get_height(0)
+    let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
+                \ 'height':a:height, 'width':a:width,
+                \ 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
+    let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
+    setlocal syntax=bufselect nowrap bufhidden=wipe cursorline
+    let s:bufnrSearch = 0
 endfunction
 
 function! s:DisplayBuffers()   " {{{1
@@ -108,7 +91,7 @@ endfunction
 
 function! s:Footer()   " {{{1
     return [ printf('%s▔▔▔%s▔▔▔%s▔▔%s▔▔%s',
-                \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 4),
+                \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 5),
                 \ repeat(g:BufSelectSortOrder == "Status"    ? '▀' : '▔', 1),
                 \ repeat(g:BufSelectSortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
                 \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
