@@ -28,9 +28,10 @@ endfunction
 
 function! s:FormatBufferNames()   " {{{1
     let s:bufferList = map(s:CollectBufferNames(), {_,v -> {'origin':v, 'buffer':matchstr(v,'"\zs.*\ze"')}})
-    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':v.buffer, 'filename':fnamemodify(v.buffer,':t')}})
-    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':v.buffer, 'filename':v.filename, 'parts': split(v.filename, '\.')}})
-    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':v.buffer, 'filename':len(v.parts)==1?v.filename:strcharpart(v.filename,0,strchars(v.filename)-strchars(v.parts[-1])-1), 'extension':len(v.parts)==1?'':v.parts[-1]}})
+    call map(s:bufferList, {_,v -> extend(v, {'onDisk':filereadable(fnamemodify(v.buffer,':p')),
+                                            \ 'path':fnamemodify(v.buffer,':.:h'),
+                                            \ 'filename':fnamemodify(v.buffer,':t:r'),
+                                            \ 'extension':fnamemodify(v.buffer,':t:e')}, 'force')})
 
     let l:filenameMaxLength = max(map(copy(s:bufferList), {_,v -> strchars(v.filename)}))
     let l:extensionMaxLength = max(map(copy(s:bufferList), {_,v -> strchars(v.extension)}))
@@ -39,10 +40,10 @@ function! s:FormatBufferNames()   " {{{1
     let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 2
     let s:pathColumn = s:extensionColumn + l:extensionMaxLength + 2
 
-    call map(s:bufferList, {_,v -> {'origin':v.origin, 'buffer':filereadable(fnamemodify(v.buffer,':p')) ?
-                \ printf( '%-*s  %-*s  %s', l:filenameMaxLength, v.filename, l:extensionMaxLength, v.extension, escape(fnamemodify(v.buffer, ':.:h'), '\') ) :
-                \ v.buffer}})
-    call map(s:bufferList, {_,v -> substitute(substitute('    '.v.origin, '^\s*\([ 0-9]\{4}\d\)\s','\1: ',''), '".*', v.buffer, '')})
+    call map(s:bufferList, {_,v -> extend(v, {'newText':v.onDisk ?
+                \ printf( '%-*s  %-*s  %s', l:filenameMaxLength, v.filename, l:extensionMaxLength, v.extension, escape(v.path, '\') ) :
+                \ escape(v.buffer,'\')}, 'force')})
+    call map(s:bufferList, {_,v -> substitute(substitute('    '.v.origin, '^\s*\([ 0-9]\{4}\d\)\s','\1: ',''), '".*', v.newText, '')})
 endfunction
 
 function! s:OpenBufSelectWindow(width, height)   " {{{1
@@ -133,7 +134,7 @@ function! s:SetupCommands()   " {{{1
     endfor
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
-    augroup BufSelectLinesBoundary
+    augroup BufSelectAuGroup
         autocmd!
         autocmd CursorMoved <buffer> if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
         autocmd BufLeave <buffer> call s:ExitBufSelect()
