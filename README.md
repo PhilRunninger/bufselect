@@ -41,15 +41,15 @@ The following key mappings are used only within the BufSelect list. They are con
 Default Key | Variable | Function
 :-:|---|---
 <kbd>o</kbd><br><kbd>Enter</kbd> | `g:BufSelectKeyOpen`<br>*n/a* | Open the selected buffer in the current window. <kbd>Enter</kbd> is unconfigurable.
-<kbd>s</kbd>                     | `g:BufSelectKeySplit`         | Split the window horizontally, and open the selected buffer there.
-<kbd>v</kbd>                     | `g:BufSelectKeyVSplit`        | Split the window vertically, and open the selected buffer there.
+<kbd>s</kbd>                     | `g:BufSelectKeySplit`         | Split the window horizontally, and open the selected buffer in the new window.
+<kbd>v</kbd>                     | `g:BufSelectKeyVSplit`        | Split the window vertically, and open the selected buffer in the new window.
 <kbd>t</kbd>                     | `g:BufSelectKeyTab`           | Open the selected buffer in a new tab.
 <kbd>x</kbd>                     | `g:BufSelectKeyDeleteBuffer`  | Close the selected buffer using vim's `:bwipeout` command.
-<kbd>S</kbd>                     | `g:BufSelectKeySort`          | Change the sort order, cycling between **Number**, **Status**, **Name**, **Extension**, and **Path**.
-<kbd>cd</kbd>                    | `g:BufSelectKeyChDir`         | Change the working directory to that of the selected buffer
+<kbd>S</kbd>                     | `g:BufSelectKeySort`          | Change the sort order: **Number**, **Status**, **Name**, **Extension**, or **Path**.
+<kbd>cd</kbd>                    | `g:BufSelectKeyChDir`         | Change the working directory to match the selected buffer's
 <kbd>..</kbd>                    | `g:BufSelectKeyChDirUp`       | Change the working directory up one level from current
-<kbd>#</kbd>                     | `g:BufSelectKeySelectOpen`    | Highlight (move cursor to) the next open buffer, those marked with `h` or `a`. See `:h :ls`.
-<kbd>0</kbd>...<kbd>9</kbd>      |                               | Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number.
+<kbd>#</kbd>                     | `g:BufSelectKeySelectOpen`    | Move cursor to the next open buffer, those marked with `h` or `a`. See `:h :ls`.
+<kbd>0</kbd>...<kbd>9</kbd>      |                               | Move cursor to the next buffer matching the cumulatively-typed buffer number.
 <kbd>q</kbd>                     | `g:BufSelectKeyExit`          | Exit the buffer list.
 <kbd>?</kbd>                     |                               | Display short descriptions of these commands.
 

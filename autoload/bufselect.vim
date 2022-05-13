@@ -3,7 +3,6 @@
 " BufSelect - a Vim buffer selection and deletion utility
 
 function! bufselect#RefreshBufferList(currentLine)   " {{{1
-    call s:FormatBufferNames()
     call s:DisplayBuffers()
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
@@ -22,28 +21,23 @@ function! s:SwitchBuffers(buffer, windowCmd)   " {{{1
     endif
 endfunction
 
-function! s:CollectBufferNames()   " {{{1
-    return filter(split(execute('buffers'), '\n'), 'v:val !~? "\\(Location\\|Quickfix\\) List"')
-endfunction
-
-function! s:FormatBufferNames()   " {{{1
-    let s:bufferList = map(s:CollectBufferNames(), {_,v -> {'origin':v, 'buffer':matchstr(v,'"\zs.*\ze"')}})
-    call map(s:bufferList, {_,v -> extend(v, {'onDisk':filereadable(fnamemodify(v.buffer,':p')),
-                                            \ 'path':fnamemodify(v.buffer,':.:h'),
-                                            \ 'filename':fnamemodify(v.buffer,':t:r'),
-                                            \ 'extension':fnamemodify(v.buffer,':t:e')}, 'force')})
-
-    let l:filenameMaxLength = max(map(copy(s:bufferList), {_,v -> strchars(v.filename)}))
-    let l:extensionMaxLength = max(map(copy(s:bufferList), {_,v -> strchars(v.extension)}))
-
+function! s:GetBufferList()   " {{{1
+    let bufferList = filter(split(execute('buffers'),'\n'), {_,v -> v !~? '\(Location\|Quickfix\) List'})
+    let Parse = {t -> matchlist(t, '^\s*\zs\(\d\+\)\(.\{-}\)"\(.*\)"')}
+    call map(bufferList, {_,v -> {'bufNr':Parse(v)[1], 'bufAttr':Parse(v)[2], 'bufName':Parse(v)[3]}})
+    call map(bufferList, {_,v -> extend(v, {'onDisk':filereadable(fnamemodify(v.bufName,':p')),
+                                          \ 'path':fnamemodify(v.bufName,':.:h'),
+                                          \ 'filename':fnamemodify(v.bufName,':t:r'),
+                                          \ 'extension':fnamemodify(v.bufName,':t:e')}, 'force')})
+    let filenameWidth = max(map(copy(bufferList), {_,v -> strchars(v.filename)}))
+    let extensionWidth = max(map(copy(bufferList), {_,v -> strchars(v.extension)}))
     let s:filenameColumn = 13
-    let s:extensionColumn = s:filenameColumn + l:filenameMaxLength + 2
-    let s:pathColumn = s:extensionColumn + l:extensionMaxLength + 2
+    let s:extensionColumn = s:filenameColumn + filenameWidth + 2
+    let s:pathColumn = s:extensionColumn + extensionWidth + 2
 
-    call map(s:bufferList, {_,v -> extend(v, {'newText':v.onDisk ?
-                \ printf( '%-*s  %-*s  %s', l:filenameMaxLength, v.filename, l:extensionMaxLength, v.extension, escape(v.path, '\') ) :
-                \ escape(v.buffer,'\')}, 'force')})
-    call map(s:bufferList, {_,v -> substitute(substitute('    '.v.origin, '^\s*\([ 0-9]\{4}\d\)\s','\1: ',''), '".*', v.newText, '')})
+    return map(bufferList, {_,v -> v.onDisk ?
+                \ printf('%5d:%s%-*s  %-*s  %s', v.bufNr, v.bufAttr, filenameWidth, v.filename, extensionWidth, v.extension, v.path) :
+                \ printf('%5d:%s%s', v.bufNr, v.bufAttr, v.bufName)})
 endfunction
 
 function! s:OpenBufSelectWindow(width, height)   " {{{1
@@ -62,12 +56,13 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
 endfunction
 
 function! s:DisplayBuffers()   " {{{1
-    let width = max(map(s:bufferList+[s:Footer()[1]],{_,l -> strchars(l)}))+1
-    let height = len(s:bufferList)+2
+    let bufferList = s:GetBufferList()
+    let width = max(map(bufferList+[s:Footer()[1]],{_,l -> strchars(l)}))+1
+    let height = len(bufferList)+2
     call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
     %delete _
-    call setline(1, s:bufferList)
+    call setline(1, bufferList)
     call append(line('$'), s:Footer())
     call nvim_win_set_width(s:bufSelectWindow, width)
     call nvim_win_set_height(s:bufSelectWindow, height)
@@ -129,8 +124,8 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp." :call <SID>ChangeDirUp()<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySelectOpen." :call <SID>SelectOpenBuffers()<CR>"
 
-    for l:i in range(10)
-        execute "nnoremap <buffer> <silent> ".l:i." :call <SID>SelectByNumber(".l:i.")<CR>"
+    for i in range(10)
+        execute "nnoremap <buffer> <silent> ".i." :call <SID>SelectByNumber(".i.")<CR>"
     endfor
     nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
@@ -148,11 +143,6 @@ function! s:GetSelectedBuffer()   " {{{1
 endfunction
 
 function! s:CloseBuffer()   " {{{1
-    if len(s:CollectBufferNames()) == 1
-        echo "Not gonna do it. The last buffer stays."
-        return
-    endif
-
     let selected = s:GetSelectedBuffer()
     let currentLine = line('.')
     call s:ExitBufSelect()
@@ -163,15 +153,15 @@ endfunction
 function! s:ChangeSort()   " {{{1
     let sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
     let g:BufSelectSortOrder = sortOptions[(index(sortOptions, g:BufSelectSortOrder) + 1) % len(sortOptions)]
-    let l:currBuffer = s:GetSelectedBuffer()
+    let currBuffer = s:GetSelectedBuffer()
     call s:SortBufferList()
     call s:UpdateFooter()
-    call s:SetPosition(search('^\s*'.l:currBuffer.':', 'w'))
+    call s:SetPosition(search('^\s*'.currBuffer.':', 'w'))
 endfunction
 
 function! s:ChangeDir()   " {{{1
-    let l:currBuffer = s:GetSelectedBuffer()
-    execute 'cd '.fnamemodify(bufname(l:currBuffer), ':p:h')
+    let currBuffer = s:GetSelectedBuffer()
+    execute 'cd '.fnamemodify(bufname(currBuffer), ':p:h')
     call bufselect#RefreshBufferList(line('.'))
 endfunction
 
@@ -192,20 +182,20 @@ function! s:SelectByNumber(num)   " {{{1
 endfunction
 
 function! s:ShowHelp()   " {{{1
-    let l:help = [
+    let helpText = [
                 \ [g:BufSelectKeyOpen        , "Open the selected buffer in the current window."],
-                \ [g:BufSelectKeySplit       , "Split the window horizontally, and open the selected buffer there."],
-                \ [g:BufSelectKeyVSplit      , "Split the window vertically, and open the selected buffer there."],
+                \ [g:BufSelectKeySplit       , "Split the window horizontally, and open the selected buffer in the new window."],
+                \ [g:BufSelectKeyVSplit      , "Split the window vertically, and open the selected buffer in the new window."],
                 \ [g:BufSelectKeyTab         , "Open the selected buffer in a new tab."],
                 \ [g:BufSelectKeyDeleteBuffer, "Close the selected buffer using vim's :bwipeout command."],
-                \ [g:BufSelectKeySort        , "Change the sort order, cycling between Number, Status, Name, Extension, and Path."],
-                \ [g:BufSelectKeyChDir       , "Change the working directory to that of the selected buffer"],
-                \ [g:BufSelectKeyChDirUp     , "Change the working directory up one level from current"],
-                \ [g:BufSelectKeySelectOpen  , "Highlight (move cursor to) the next open buffer, those marked with h or a."],
-                \ ["0-9"                     , "Highlight (move cursor to) the next buffer matching the cumulatively-typed buffer number."],
+                \ [g:BufSelectKeySort        , "Change the sort order: Number, Status, Name, Extension, or Path."],
+                \ [g:BufSelectKeyChDir       , "Change working directory to match the selected buffer's"],
+                \ [g:BufSelectKeyChDirUp     , "Change working directory up one level from current"],
+                \ [g:BufSelectKeySelectOpen  , "Move cursor to the next open buffer, those marked with h or a."],
+                \ ["0-9"                     , "Move cursor to the next buffer matching the cumulatively-typed buffer number."],
                 \ [g:BufSelectKeyExit        , "Exit the buffer list."]
                \ ]
-    for key in l:help
+    for key in helpText
         echohl Identifier
         echon printf("%3s", key[0])
         echohl Normal
