@@ -3,6 +3,10 @@
 " BufSelect - a Vim buffer selection and deletion utility
 
 function! bufselect#RefreshBufferList(currentLine)   " {{{1
+    if exists('s:bufSelectWindow')
+        return
+    endif
+
     call s:DisplayBuffers()
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
@@ -41,15 +45,11 @@ function! s:GetBufferList()   " {{{1
 endfunction
 
 function! s:OpenBufSelectWindow(width, height)   " {{{1
-    if exists('s:bufSelectWindow')
-        return
-    endif
-
     let hostWidth = nvim_win_get_width(0)
     let hostHeight = nvim_win_get_height(0)
     let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
                 \ 'height':a:height, 'width':a:width,
-                \ 'border':'rounded', 'noautocmd':1, 'style':'minimal'}
+                \ 'border':'double', 'noautocmd':1, 'style':'minimal'}
     let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
     setlocal syntax=bufselect nowrap bufhidden=wipe cursorline
     let s:bufnrSearch = 0
