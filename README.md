@@ -1,6 +1,8 @@
 # bufselect.vim
 
-This is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. I wanted this plugin to be a lot lighter weight, so I removed functionality I didn't really find necessary. What it ended up being is:
+![image](https://user-images.githubusercontent.com/5598066/187665965-1e0c922b-8ae3-4075-ba06-80e56629e6d0.png)
+
+**bufselect.vim** is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. I wanted this plugin to be a lot lighter weight, so I removed functionality I didn't really find necessary. What it ended up being is:
 
 * a simple list that shows the buffer number, filename, and relative path of the buffers you see in the `:ls` command
 * a few key mappings to do the following tasks:
