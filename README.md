@@ -1,15 +1,10 @@
-# bufselect.vim
+# BufSelect
 
-<center>
+## Summary
 
-![image](media/darkScreenshot.png)
-<br>BufSelect on Dark Background
+![image](media/darkScreenshot.png) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ![image](media/lightScreenshot.png)
 
-![image](media/lightScreenshot.png)
-<br>BufSelect on Light Background
-</center>
-
-**bufselect.vim** is a minimalist buffer switcher plugin for Vim or Neovim. It is a much lighter-weight alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. To achieve this, I removed functionality I didn't really find necessary. What it ended up being is:
+**BufSelect** is a minimalist buffer switcher plugin for Vim or Neovim. It is a much lighter-weight alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. To achieve this, I removed functionality I didn't really find necessary. What it ended up being is:
 
 * A single command to kick things off (`:ShowBufferList`).
 * A simple list showing, in a floating window, the buffer number, filename, and relative path of all listed buffers. The buffer list is generated each time the command is called, rather than being maintained behind the scenes with autocommands. This simplifies the code considerably.
@@ -64,11 +59,11 @@ let g:BufSelectSortOrder = 'Name'
 ```
 Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
 
-`'Status'` refers to whether or not that buffer is loaded into Vim. See `:h :ls`, which states:
+`'Status'` refers to whether or not that buffer is loaded into Vim. See `:help :ls`, which states:
 
 * `a` an active buffer: it is loaded and visible
 * `h` a hidden buffer: it is loaded, but currently not displayed in a window
-* ` `(space) indicates a file that's been added (see `:h :badd`), but is not yet loaded.
+* ` `(space) indicates a file that's been added (see `:help :badd`), but is not yet loaded.
 
 ### Custom Highlighting
 The colors used in BufSelect were picked to work in both dark and light backgrounds, but they can be customized if desired, by changing these variables. Their default values are shown here:
@@ -80,7 +75,7 @@ let g:BufSelectHighlightUnsaved = 'guibg=NONE guifg=#FF5F00 ctermbg=NONE ctermfg
 let g:BufSelectHighlightSort    = 'guibg=NONE guifg=#FF8700 ctermbg=NONE ctermfg=208'
 ```
 
-The syntax above shows how to hard-code the colors. The value must adhere to valid syntax when used in a `:highlight {group-name} {args}` command. See `:h :higlight-args` for more detail.
+The syntax above shows how to hard-code the colors. The value must adhere to valid syntax when used as `{args}` when placed into a `:highlight {group-name} {args}` statement. See `:help :highlight-args` for more detail.
 
 To match a colorscheme's colors, use the syntax below to link to an existing highlight group. Change `Statement` as appropriate.
 
