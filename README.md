@@ -1,19 +1,19 @@
 # bufselect.vim
 
-![image](https://user-images.githubusercontent.com/5598066/187665965-1e0c922b-8ae3-4075-ba06-80e56629e6d0.png)
+<center>
 
-**bufselect.vim** is a minimalist alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. I wanted this plugin to be a lot lighter weight, so I removed functionality I didn't really find necessary. What it ended up being is:
+![image](media/darkScreenshot.png)
+<br>BufSelect on Dark Background
 
-* a simple list that shows the buffer number, filename, and relative path of the buffers you see in the `:ls` command
-* a few key mappings to do the following tasks:
-    * open the buffer (<kbd>o</kbd>), including into splits (<kbd>s</kbd>, <kbd>v</kbd>) or a new tab (<kbd>t</kbd>)
-    * delete buffer from Vim (<kbd>x</kbd>)
-    * sort the list (<kbd>S</kbd>)
-    * change the working directory (<kbd>..</kbd>, <kbd>cd</kbd>)
-    * highlight open buffers in the list (<kbd>#</kbd>)
-    * highlight buffers by number (<kbd>0</kbd>...<kbd>9</kbd>)
-* a single command to kick things off (`:ShowBufferList`)
-* a non-persistent list of buffers. The buffer list is generated each time the command is called, rather than being maintained behind the scenes with autocommands. This simplifies the code considerably.
+![image](media/lightScreenshot.png)
+<br>BufSelect on Light Background
+</center>
+
+**bufselect.vim** is a minimalist buffer switcher plugin for Vim or Neovim. It is a much lighter-weight alternative to [bufexplorer](https://github.com/jlanzarotta/bufexplorer) and [buffergator](https://github.com/jeetsukumaran/vim-buffergator), both of which I'd used in the past. To achieve this, I removed functionality I didn't really find necessary. What it ended up being is:
+
+* A single command to kick things off (`:ShowBufferList`).
+* A simple list showing, in a floating window, the buffer number, filename, and relative path of all listed buffers. The buffer list is generated each time the command is called, rather than being maintained behind the scenes with autocommands. This simplifies the code considerably.
+* A few key mappings to open and delete buffers, sort the list, change working directory, and quickly move between buffers.
 
 ## Installation
 
@@ -23,41 +23,67 @@ If you have no favorite, or want to manage your plugins without 3rd-party depend
 
 ## Compatibility
 
-The `master` branch of this plugin is no longer compatible with vim, as it uses functions found only in Neovim to display BufSelect in a floating window. When opening a buffer into the same tab, it is done relative to the window underneath the floating BufSelect window.
-
-If you are using Vim 8+, not Neovim, you can still use this plugin; just checkout the `vim-compatible` branch. This branch will display BufSelect in the current window, as it always has.
+The `master` branch of this plugin is no longer compatible with Vim, and all new development will target Neovim. If you are using Vim 8+, you can still use this plugin; just checkout the `vim-compatible` branch.
 
 ## Command
 
-The only command is **`:ShowBufferList`**, which can be assigned to a key. For example,
+The only command is **`:ShowBufferList`**, which can be assigned to a key. The mapping is not done by this plugin, so as not to interfere with your existing mappings. Here is how you would map the command:
 ```vim
 nnoremap <silent> <leader>b :ShowBufferList<CR>
 ```
-The mapping is not done by this plugin, so as not to interfere with any existing mappings you may have.
 
 ## Settings
 ### Key Mappings
 
-The following key mappings are used only within the BufSelect list. They are configurable by setting the corresponding global variables.
+The following key mappings are used only within the BufSelect list.
 
-Default Key | Variable | Function
-:-:|---|---
-<kbd>o</kbd><br><kbd>Enter</kbd> | `g:BufSelectKeyOpen`<br>*n/a* | Open the selected buffer in the current window. <kbd>Enter</kbd> is unconfigurable.
-<kbd>s</kbd>                     | `g:BufSelectKeySplit`         | Split the window horizontally, and open the selected buffer in the new window.
-<kbd>v</kbd>                     | `g:BufSelectKeyVSplit`        | Split the window vertically, and open the selected buffer in the new window.
-<kbd>t</kbd>                     | `g:BufSelectKeyTab`           | Open the selected buffer in a new tab.
-<kbd>x</kbd>                     | `g:BufSelectKeyDeleteBuffer`  | Close the selected buffer using vim's `:bwipeout` command.
-<kbd>S</kbd>                     | `g:BufSelectKeySort`          | Change the sort order: **Number**, **Status**, **Name**, **Extension**, or **Path**.
-<kbd>cd</kbd>                    | `g:BufSelectKeyChDir`         | Change the working directory to match the selected buffer's
-<kbd>..</kbd>                    | `g:BufSelectKeyChDirUp`       | Change the working directory up one level from current
-<kbd>#</kbd>                     | `g:BufSelectKeySelectOpen`    | Move cursor to the next open buffer, those marked with `h` or `a`. See `:h :ls`.
-<kbd>0</kbd>...<kbd>9</kbd>      |                               | Move cursor to the next buffer matching the cumulatively-typed buffer number.
-<kbd>q</kbd>                     | `g:BufSelectKeyExit`          | Exit the buffer list.
-<kbd>?</kbd>                     |                               | Display short descriptions of these commands.
+The first group are configurable by changing the value in the global variables. The default values are shown here, and only the keys you want to change need to be included in your `.vimrc`.
+
+```vim
+let g:BufSelectKeyOpen         = 'o'  " Open the buffer in the current window.
+let g:BufSelectKeySplit        = 's'  " Open the buffer in a new horzontal split.
+let g:BufSelectKeyVSplit       = 'v'  " Open the buffer in a new vertical split.
+let g:BufSelectKeyTab          = 't'  " Open the buffer in a new tab.
+let g:BufSelectKeyDeleteBuffer = 'x'  " Close the buffer using vim's bwipeout command.
+let g:BufSelectKeySort         = 'S'  " Change the sort order.
+let g:BufSelectKeyChDir        = 'cd' " Change working directory to match the buffer's
+let g:BufSelectKeyChDirUp      = '..' " Change working directory up one level from current
+let g:BufSelectKeySelectOpen   = '#'  " Move cursor to the next listed open buffer,
+let g:BufSelectKeyExit         = 'q'  " Exit the buffer list.
+```
+The following keys are not configurable.
+* <kbd>Enter</kbd> opens a buffer in the current window. It's the same as `g:BufSelectKeyOpen`.
+* <kbd>Esc</kbd> exits the buffer list - the same as `g:BufSelectKeyExit`.
+* <kbd>0</kbd>...<kbd>9</kbd> moves the cursor to the next buffer matching the cumulatively-typed buffer number.
+* <kbd>?</kbd> displays short descriptions of these commands.
 
 ### Sort Order
-The default sort order can be set in the variable `g:BufSelectSortOrder`. The valid values are `"Num"`, `"Status"`, `"Name"`, `"Extension"`, and `"Path"`, with `"Name"` being the default. `"Status"` refers to whether or not that buffer is loaded into Vim. See `:h :ls`.
+The default sort order can be set with this statement, which shows the default:
+```vim
+let g:BufSelectSortOrder = 'Name'
+```
+Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
 
-* `h` means the buffer is loaded and currently hidden.
-* `a` identifies the latest active buffer (not counting the Buffer List)
-* ` `(space) indicates a file that's been `:badd`ed to vim, but is not yet loaded.
+`'Status'` refers to whether or not that buffer is loaded into Vim. See `:h :ls`, which states:
+
+* `a` an active buffer: it is loaded and visible
+* `h` a hidden buffer: it is loaded, but currently not displayed in a window
+* ` `(space) indicates a file that's been added (see `:h :badd`), but is not yet loaded.
+
+### Custom Highlighting
+The colors used in BufSelect were picked to work in both dark and light backgrounds, but they can be customized if desired, by changing these variables. Their default values are shown here:
+
+```vim
+let g:BufSelectHighlightCurrent = 'guibg=NONE guifg=#5F87FF ctermbg=NONE ctermfg=69'
+let g:BufSelectHighlightAlt     = 'guibg=NONE guifg=#5FAF00 ctermbg=NONE ctermfg=70'
+let g:BufSelectHighlightUnsaved = 'guibg=NONE guifg=#FF5F00 ctermbg=NONE ctermfg=202'
+let g:BufSelectHighlightSort    = 'guibg=NONE guifg=#FF8700 ctermbg=NONE ctermfg=208'
+```
+
+The syntax above shows how to hard-code the colors. The value must adhere to valid syntax when used in a `:highlight {group-name} {args}` command. See `:h :higlight-args` for more detail.
+
+To match a colorscheme's colors, use the syntax below to link to an existing highlight group. Change `Statement` as appropriate.
+
+```vim
+let g:BufSelectHighlightCurrent = 'link Statement'
+```
