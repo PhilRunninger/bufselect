@@ -66,7 +66,7 @@ Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
 * ` `(space) indicates a file that's been added (see `:help :badd`), but is not yet loaded.
 
 ### Custom Highlighting
-The colors used in BufSelect were picked to work in both dark and light backgrounds, but they can be customized if desired, by changing these variables. Their default values are shown here:
+The colors used in BufSelect were picked to work in both dark and light backgrounds, but they can be customized if desired, by changing these variables. The syntax below shows how to hard-code the colors. The value must adhere to valid syntax when used as `{args}` in a `:highlight {group-name} {args}` statement. See `:help :highlight-args` for more details. The default values are:
 
 ```vim
 let g:BufSelectHighlightCurrent = 'guibg=NONE guifg=#5F87FF ctermbg=NONE ctermfg=69'
@@ -75,10 +75,11 @@ let g:BufSelectHighlightUnsaved = 'guibg=NONE guifg=#FF5F00 ctermbg=NONE ctermfg
 let g:BufSelectHighlightSort    = 'guibg=NONE guifg=#FF8700 ctermbg=NONE ctermfg=208'
 ```
 
-The syntax above shows how to hard-code the colors. The value must adhere to valid syntax when used as `{args}` when placed into a `:highlight {group-name} {args}` statement. See `:help :highlight-args` for more detail.
-
-To match a colorscheme's colors, use the syntax below to link to an existing highlight group. Change `Statement` as appropriate.
+To match a colorscheme's colors, use the syntax below to link to an existing highlight group. It is the word `link` followed by the name of the highlight group whose formatting you want to use.
 
 ```vim
-let g:BufSelectHighlightCurrent = 'link Statement'
+let g:BufSelectHighlightCurrent = 'link Identifier'
+let g:BufSelectHighlightAlt     = 'link Label'
+let g:BufSelectHighlightUnsaved = 'link Error'
+let g:BufSelectHighlightSort    = 'link Function'
 ```
