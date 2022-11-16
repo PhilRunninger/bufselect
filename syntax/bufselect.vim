@@ -8,12 +8,7 @@ syntax match BufSelectAlt /^\s*\d\+: #.*/
 syntax match BufSelectUnsaved /^\s*\d\+: ...+.*/
 
 function! s:SetHighlight(group, setting)
-    let parts = split(a:setting, 'link\zs')
-    if a:setting =~? '\<link\>'
-        execute 'highlight link ' . a:group . ' ' . trim(substitute(a:setting, 'link', '', ''))
-    else
-        execute 'highlight ' . a:group . ' ' . a:setting
-    endif
+    execute printf('highlight %s %s %s', (a:setting =~ '=' ? '' : 'link '), a:group, a:setting)
 endfunction
 
 call s:SetHighlight('BufSelectSort',      g:BufSelectHighlightSort)
