@@ -112,17 +112,18 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit." :call <SID>ExitBufSelect()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')\<CR>"
-    execute "nnoremap <buffer> <silent> <CR> :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer')\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort." :call <SID>ChangeSort()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir." :call <SID>ChangeDir()\<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp." :call <SID>ChangeDirUp()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySelectOpen." :call <SID>SelectOpenBuffers()<CR>"
+    execute "nnoremap <buffer> <silent>   <Esc>                        :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent>   <CR>                         :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit        ." :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen        ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit       ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer')<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit      ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer')<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab         ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer')<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort        ." :call <SID>ChangeSort()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir       ." :call <SID>ChangeDir()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp     ." :call <SID>ChangeDirUp()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySelectOpen  ." :call <SID>SelectOpenBuffers()<CR>"
 
     for i in range(10)
         execute "nnoremap <buffer> <silent> ".i." :call <SID>SelectByNumber(".i.")<CR>"
