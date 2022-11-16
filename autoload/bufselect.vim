@@ -162,12 +162,16 @@ endfunction
 function! s:ChangeDir()   " {{{1
     let currBuffer = s:GetSelectedBuffer()
     execute 'cd '.fnamemodify(bufname(currBuffer), ':p:h')
-    call bufselect#RefreshBufferList(line('.'))
+    let currentLine = line('.')
+    call s:ExitBufSelect()
+    call bufselect#RefreshBufferList(currentLine)
 endfunction
 
 function! s:ChangeDirUp()   " {{{1
+    let currentLine = line('.')
+    call s:ExitBufSelect()
     cd ..
-    call bufselect#RefreshBufferList(line('.'))
+    call bufselect#RefreshBufferList(currentLine)
 endfunction
 
 function! s:SelectOpenBuffers()   " {{{1
