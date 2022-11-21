@@ -16,10 +16,14 @@ function! s:ExitBufSelect()   "{{{1
     unlet! s:bufSelectWindow
 endfunction
 
-function! s:SwitchBuffers(buffer, windowCmd)   " {{{1
+function! s:SwitchBuffers(buffer, windowCmd, preview)   " {{{1
+    let currentLine = line('.')
     call s:ExitBufSelect()
     if bufexists(a:buffer)
         execute a:windowCmd . a:buffer
+    endif
+    if a:preview
+        call bufselect#RefreshBufferList(currentLine)
     endif
 endfunction
 
@@ -109,18 +113,23 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute "nnoremap <buffer> <silent>   <Esc>                        :call <SID>ExitBufSelect()<CR>"
-    execute "nnoremap <buffer> <silent>   <CR>                         :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit        ." :call <SID>ExitBufSelect()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen        ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer')<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit       ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer')<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit      ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer')<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab         ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer')<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort        ." :call <SID>ChangeSort()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir       ." :call <SID>ChangeDir()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp     ." :call <SID>ChangeDirUp()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySelectOpen  ." :call <SID>SelectOpenBuffers()<CR>"
+    execute "nnoremap <buffer> <silent>    <Esc>                        :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyExit        ." :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent>    <CR>                         :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent>    g<CR>                        :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyOpen        ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeySplit       ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyVSplit      ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyTab         ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> g".g:BufSelectKeyOpen        ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> g".g:BufSelectKeySplit       ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> g".g:BufSelectKeyVSplit      ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> g".g:BufSelectKeyTab         ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeySort        ." :call <SID>ChangeSort()<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyChDir       ." :call <SID>ChangeDir()<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyChDirUp     ." :call <SID>ChangeDirUp()<CR>"
+    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeySelectOpen  ." :call <SID>SelectOpenBuffers()<CR>"
 
     for i in range(10)
         execute "nnoremap <buffer> <silent> ".i." :call <SID>SelectByNumber(".i.")<CR>"
@@ -177,21 +186,25 @@ endfunction
 
 function! s:ShowHelp()   " {{{1
     let helpText = [
-                \ [g:BufSelectKeyOpen        , "Open the selected buffer in the current window."],
-                \ [g:BufSelectKeySplit       , "Split the window horizontally, and open the selected buffer in the new window."],
-                \ [g:BufSelectKeyVSplit      , "Split the window vertically, and open the selected buffer in the new window."],
-                \ [g:BufSelectKeyTab         , "Open the selected buffer in a new tab."],
-                \ [g:BufSelectKeyDeleteBuffer, "Close the selected buffer using vim's :bwipeout command."],
-                \ [g:BufSelectKeySort        , "Change the sort order: Number, Status, Name, Extension, or Path."],
-                \ [g:BufSelectKeyChDir       , "Change working directory to match the selected buffer's"],
-                \ [g:BufSelectKeyChDirUp     , "Change working directory up one level from current"],
-                \ [g:BufSelectKeySelectOpen  , "Move cursor to the next open buffer, those marked with h or a."],
-                \ ["0-9"                     , "Move cursor to the next buffer matching the cumulatively-typed buffer number."],
-                \ [g:BufSelectKeyExit        , "Exit the buffer list."]
+                \ ['<CR>   '.g:BufSelectKeyOpen  , "Open the buffer in the current window."],
+                \ ['g<CR>  g'.g:BufSelectKeyOpen, "Open the buffer in the current window, and keep BufSelect open."],
+                \ [g:BufSelectKeySplit          , "Open the buffer in a new horizontal split."],
+                \ ['g'.g:BufSelectKeySplit      , "Open the buffer in a new horizontal split, and keep BufSelect open."],
+                \ [g:BufSelectKeyVSplit         , "Open the buffer in a new vertical split."],
+                \ ['g'.g:BufSelectKeyVSplit     , "Open the buffer in a new vertical split, and keep BufSelect open."],
+                \ [g:BufSelectKeyTab            , "Open the buffer in a new tab."],
+                \ ['g'.g:BufSelectKeyTab        , "Open the buffer in a new tab, and keep BufSelect open."],
+                \ [g:BufSelectKeyDeleteBuffer   , "Close the selected buffer using vim's :bwipeout command."],
+                \ [g:BufSelectKeySort           , "Change the sort order: Number, Status, Name, Extension, or Path."],
+                \ [g:BufSelectKeyChDir          , "Change working directory to match the selected buffer's"],
+                \ [g:BufSelectKeyChDirUp        , "Change working directory up one level from current"],
+                \ [g:BufSelectKeySelectOpen     , "Move cursor to the next open buffer, those marked with h or a."],
+                \ ['0-9'                        , "Move cursor to the next buffer matching the cumulatively-typed buffer number."],
+                \ ['<Esc>   '.g:BufSelectKeyExit , "Exit the buffer list."]
                \ ]
     for key in helpText
         echohl Identifier
-        echon printf("%3s", key[0])
+        echon printf("%9s", key[0])
         echohl Normal
         echon "  ".key[1]
         echo ""
