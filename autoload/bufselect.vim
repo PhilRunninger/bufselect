@@ -3,10 +3,6 @@
 " BufSelect - a Vim buffer selection and deletion utility
 
 function! bufselect#RefreshBufferList(currentLine)   " {{{1
-    if exists('s:bufSelectWindow')
-        return
-    endif
-
     call s:DisplayBuffers()
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
@@ -14,7 +10,9 @@ function! bufselect#RefreshBufferList(currentLine)   " {{{1
 endfunction
 
 function! s:ExitBufSelect()   "{{{1
-    call nvim_win_hide(s:bufSelectWindow)
+    if exists('s:bufSelectWindow')
+        call nvim_win_hide(s:bufSelectWindow)
+    endif
     unlet! s:bufSelectWindow
 endfunction
 
@@ -45,6 +43,7 @@ function! s:GetBufferList()   " {{{1
 endfunction
 
 function! s:OpenBufSelectWindow(width, height)   " {{{1
+    call s:ExitBufSelect()
     let hostWidth = nvim_win_get_width(0)
     let hostHeight = nvim_win_get_height(0)
     let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
@@ -144,11 +143,8 @@ function! s:GetSelectedBuffer()   " {{{1
 endfunction
 
 function! s:CloseBuffer()   " {{{1
-    let selected = s:GetSelectedBuffer()
-    let currentLine = line('.')
-    call s:ExitBufSelect()
-    execute 'bwipeout ' . selected
-    call bufselect#RefreshBufferList(currentLine)
+    execute 'bwipeout ' . s:GetSelectedBuffer()
+    call bufselect#RefreshBufferList(line('.'))
 endfunction
 
 function! s:ChangeSort()   " {{{1
@@ -161,18 +157,13 @@ function! s:ChangeSort()   " {{{1
 endfunction
 
 function! s:ChangeDir()   " {{{1
-    let currBuffer = s:GetSelectedBuffer()
-    execute 'cd '.fnamemodify(bufname(currBuffer), ':p:h')
-    let currentLine = line('.')
-    call s:ExitBufSelect()
-    call bufselect#RefreshBufferList(currentLine)
+    execute 'cd '.fnamemodify(bufname(s:GetSelectedBuffer()), ':p:h')
+    call bufselect#RefreshBufferList(line('.'))
 endfunction
 
 function! s:ChangeDirUp()   " {{{1
-    let currentLine = line('.')
-    call s:ExitBufSelect()
     cd ..
-    call bufselect#RefreshBufferList(currentLine)
+    call bufselect#RefreshBufferList(line('.'))
 endfunction
 
 function! s:SelectOpenBuffers()   " {{{1
