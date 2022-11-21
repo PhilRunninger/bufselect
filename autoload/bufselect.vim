@@ -63,8 +63,6 @@ function! s:DisplayBuffers()   " {{{1
     %delete _
     call setline(1, bufferList)
     call append(line('$'), s:Footer())
-    call nvim_win_set_width(s:bufSelectWindow, width)
-    call nvim_win_set_height(s:bufSelectWindow, height)
     setlocal nomodifiable
 endfunction
 
