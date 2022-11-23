@@ -6,7 +6,7 @@
 
 * A [single command](#command) to kick things off.
 * A simple list in a floating window, showing the buffer number, filename, and relative path of all listed buffers. The list is generated each time **BufSelect** is displayed, thereby simplifying the code considerably.
-![image](media/darkScreenshot.png) ![image](media/lightScreenshot.png)
+![image](media/darkScreenshot.png)
 * A few [key mappings](#key-mappings) to open and delete buffers, sort the list, change working directory, and quickly move between buffers.
 * Other settings define [sort order](#sort-order) and [custom highlighting](#custom-highlighting).
 
@@ -53,7 +53,9 @@ let g:BufSelectKeyExit         = 'q'  " Exit the buffer list.
 * <kbd>Enter</kbd> opens a buffer in the current window. It's the same as `g:BufSelectKeyOpen`.
 * <kbd>Esc</kbd> exits the buffer list - the same as `g:BufSelectKeyExit`.
 * <kbd>0</kbd>...<kbd>9</kbd> moves the cursor to the next buffer matching the cumulatively-typed buffer number.
-* <kbd>?</kbd> displays short descriptions of these commands.
+* <kbd>?</kbd> show/hides short descriptions of these commands.
+![image](media/lightScreenshot.png)
+
 
 ### Sort Order
 The default sort order can be set with this statement, which shows the default:

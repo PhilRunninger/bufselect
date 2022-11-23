@@ -2,6 +2,8 @@
 "
 " BufSelect - a Vim buffer selection and deletion utility
 
+let s:showingHelp = 0
+
 function! bufselect#RefreshBufferList(currentLine)   " {{{1
     call s:DisplayBuffers()
     call s:SortBufferList()
@@ -16,11 +18,12 @@ function! s:ExitBufSelect()   "{{{1
     unlet! s:bufSelectWindow
 endfunction
 
-function! s:SwitchBuffers(buffer, windowCmd, preview)   " {{{1
+function! s:SwitchBuffers(windowCmd, preview)   " {{{1
+    let bufNum = s:GetSelectedBuffer()
     let currentLine = line('.')
     call s:ExitBufSelect()
-    if bufexists(a:buffer)
-        execute a:windowCmd . a:buffer
+    if bufexists(bufNum)
+        execute a:windowCmd . bufNum
     endif
     if a:preview
         call bufselect#RefreshBufferList(currentLine)
@@ -54,52 +57,78 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
                 \ 'height':a:height, 'width':a:width,
                 \ 'border':'double', 'noautocmd':1, 'style':'minimal'}
     let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
-    setlocal syntax=bufselect nowrap bufhidden=wipe cursorline
+    setlocal syntax=bufselect nowrap bufhidden=wipe cursorline scrolloff=20
     let s:bufnrSearch = 0
 endfunction
 
 function! s:DisplayBuffers()   " {{{1
     let bufferList = s:GetBufferList()
-    let width = max(map(bufferList+[s:Footer()[1]],{_,l -> strchars(l)}))+1
-    let height = len(bufferList)+2
+    let footer = s:Footer()
+    let width = max(map(copy(bufferList),{_,l -> strchars(l)}))+1
+    let width = max([footer.width+1, width])
+    let height = len(bufferList)+len(footer.text)
     call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
     %delete _
     call setline(1, bufferList)
-    call append(line('$'), s:Footer())
+    call append(line('$'), footer.text)
     setlocal nomodifiable
 endfunction
 
 function! s:SortBufferList()   " {{{1
     setlocal modifiable
-    1,$-2sort n
+    1,/^[▀▔]\+$/-1sort n
     if g:BufSelectSortOrder != "Num"
-        execute '1,$-2sort /^.\{' . (s:filenameColumn-1) . '}/'
+        execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:filenameColumn-1) . '}/'
     endif
     if g:BufSelectSortOrder == "Status"
-        execute '1,$-2sort! /^\s*\d\+:..\zs.\ze/ r'
+        execute '1,/^[▀▔]\+$/-1sort! /^\s*\d\+:..\zs.\ze/ r'
     elseif g:BufSelectSortOrder == "Extension"
-        execute '1,$-2sort /^.\{' . (s:extensionColumn-1) . '}/'
+        execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:extensionColumn-1) . '}/'
     elseif g:BufSelectSortOrder == "Path"
-        execute '1,$-2sort /^.\{' . (s:pathColumn-1) . '}/'
+        execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:pathColumn-1) . '}/'
     endif
     setlocal nomodifiable
 endfunction
 
 function! s:Footer()   " {{{1
-    return [ printf('%s▔▔▔%s▔▔▔%s▔▔%s▔▔%s',
-                \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 5),
-                \ repeat(g:BufSelectSortOrder == "Status"    ? '▀' : '▔', 1),
-                \ repeat(g:BufSelectSortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
-                \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
-                \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
-           \ printf('Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
+    let footerText = [
+        \ printf('%s▔▔▔%s▔▔▔%s▔▔%s▔▔%s',
+            \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 5),
+            \ repeat(g:BufSelectSortOrder == "Status"    ? '▀' : '▔', 1),
+            \ repeat(g:BufSelectSortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
+            \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
+            \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
+        \ printf('? for help  Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
+    if !s:showingHelp
+        return {'text':footerText, 'width':strchars(footerText[1])}
+    else
+        let helpText = [
+            \ repeat("▁", 300),
+            \ printf(" <CR> %3s ▏Open buffer in the current window.",                      g:BufSelectKeyOpen),
+            \ printf("      %3s ▏Open buffer in a new horizontal split.",                  g:BufSelectKeySplit),
+            \ printf("      %3s ▏Open buffer in a new vertical split.",                    g:BufSelectKeyVSplit),
+            \ printf("      %3s ▏Open buffer in a new tab.",                               g:BufSelectKeyTab),
+            \ printf("g<CR> %3s ▏Preview buffer in the current window.",               'g'.g:BufSelectKeyOpen),
+            \ printf("      %3s ▏Preview buffer in a new horizontal split.",           'g'.g:BufSelectKeySplit),
+            \ printf("      %3s ▏Preview buffer in a new vertical split.",             'g'.g:BufSelectKeyVSplit),
+            \ printf("      %3s ▏Preview buffer in a new tab.",                        'g'.g:BufSelectKeyTab),
+            \ printf("      %3s ▏Close the selected buffer using :bwipeout.",              g:BufSelectKeyDeleteBuffer),
+            \ printf("      %3s ▏Change the sort order.",                                  g:BufSelectKeySort),
+            \ printf("      %3s ▏Change working directory to selected buffer's folder.",   g:BufSelectKeyChDir),
+            \ printf("      %3s ▏Change working directory up one level from current.",     g:BufSelectKeyChDirUp),
+            \ printf("      %3s ▏Move cursor to the next open buffer.",                    g:BufSelectKeySelectOpen),
+            \ printf("      0-9 ▏Move cursor to the next buffer by buffer number."),
+            \ printf("<Esc> %3s ▏Exit the buffer list.",                                   g:BufSelectKeyExit)
+            \ ]
+        return {'text':footerText + helpText, 'width':max(map(footerText[1:]+helpText[1:], {_,v->strchars(v)}))}
+    endif
 endfunction
 
 function! s:UpdateFooter()   " {{{1
     setlocal modifiable
-    call setline(line('$')-1, s:Footer()[0])
-    call setline(line('$'), s:Footer()[1])
+    /^[▀▔]\+$/,$delete
+    call append('$', s:Footer().text)
     setlocal nomodifiable
 endfunction
 
@@ -113,32 +142,32 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute "nnoremap <buffer> <silent>    <Esc>                        :call <SID>ExitBufSelect()<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyExit        ." :call <SID>ExitBufSelect()<CR>"
-    execute "nnoremap <buffer> <silent>    <CR>                         :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent>    g<CR>                        :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyOpen        ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeySplit       ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyVSplit      ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyTab         ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent> g".g:BufSelectKeyOpen        ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'buffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> g".g:BufSelectKeySplit       ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'sbuffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> g".g:BufSelectKeyVSplit      ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'vertical sbuffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> g".g:BufSelectKeyTab         ." :call <SID>SwitchBuffers(<SID>GetSelectedBuffer(), 'tab sbuffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyDeleteBuffer." :call <SID>CloseBuffer()<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeySort        ." :call <SID>ChangeSort()<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyChDir       ." :call <SID>ChangeDir()<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeyChDirUp     ." :call <SID>ChangeDirUp()<CR>"
-    execute "nnoremap <buffer> <silent>  ".g:BufSelectKeySelectOpen  ." :call <SID>SelectOpenBuffers()<CR>"
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                       '<Esc>')
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                          g:BufSelectKeyExit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",            '<CR>')
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",               g:BufSelectKeyOpen)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 0)<CR>",              g:BufSelectKeySplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>",     g:BufSelectKeyVSplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>",          g:BufSelectKeyTab)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           'g<CR>')
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           'g'.g:BufSelectKeyOpen)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 1)<CR>",          'g'.g:BufSelectKeySplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>", 'g'.g:BufSelectKeyVSplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>",      'g'.g:BufSelectKeyTab)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>CloseBuffer()<CR>",                            g:BufSelectKeyDeleteBuffer)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeSort()<CR>",                             g:BufSelectKeySort)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDir()<CR>",                              g:BufSelectKeyChDir)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDirUp()<CR>",                            g:BufSelectKeyChDirUp)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SelectOpenBuffers()<CR>",                      g:BufSelectKeySelectOpen)
 
     for i in range(10)
-        execute "nnoremap <buffer> <silent> ".i." :call <SID>SelectByNumber(".i.")<CR>"
+        execute printf("nnoremap <buffer> <silent> %d call <SID>SelectByNumber(%d)<CR>", i, i)
     endfor
-    nnoremap <buffer> <silent> ? :call <SID>ShowHelp()<CR>
 
+    nnoremap <buffer> <silent> ? <Cmd>call <SID>ToggleHelp()<CR>
     augroup BufSelectAuGroup
         autocmd!
-        autocmd CursorMoved <buffer> if line('.') > line('$')-2 | execute "normal! ".(line('$')-2)."gg" | endif
+        autocmd CursorMoved <buffer> if line('.') > line('$')-len(<SID>Footer().text) | execute "normal! ".(line('$')-len(<SID>Footer().text))."gg" | endif
         autocmd BufLeave <buffer> call s:ExitBufSelect()
     augroup END
 endfunction
@@ -184,30 +213,7 @@ function! s:SelectByNumber(num)   " {{{1
     endwhile
 endfunction
 
-function! s:ShowHelp()   " {{{1
-    let helpText = [
-                \ ['<CR>   '.g:BufSelectKeyOpen  , "Open the buffer in the current window."],
-                \ ['g<CR>  g'.g:BufSelectKeyOpen, "Open the buffer in the current window, and keep BufSelect open."],
-                \ [g:BufSelectKeySplit          , "Open the buffer in a new horizontal split."],
-                \ ['g'.g:BufSelectKeySplit      , "Open the buffer in a new horizontal split, and keep BufSelect open."],
-                \ [g:BufSelectKeyVSplit         , "Open the buffer in a new vertical split."],
-                \ ['g'.g:BufSelectKeyVSplit     , "Open the buffer in a new vertical split, and keep BufSelect open."],
-                \ [g:BufSelectKeyTab            , "Open the buffer in a new tab."],
-                \ ['g'.g:BufSelectKeyTab        , "Open the buffer in a new tab, and keep BufSelect open."],
-                \ [g:BufSelectKeyDeleteBuffer   , "Close the selected buffer using vim's :bwipeout command."],
-                \ [g:BufSelectKeySort           , "Change the sort order: Number, Status, Name, Extension, or Path."],
-                \ [g:BufSelectKeyChDir          , "Change working directory to match the selected buffer's"],
-                \ [g:BufSelectKeyChDirUp        , "Change working directory up one level from current"],
-                \ [g:BufSelectKeySelectOpen     , "Move cursor to the next open buffer, those marked with h or a."],
-                \ ['0-9'                        , "Move cursor to the next buffer matching the cumulatively-typed buffer number."],
-                \ ['<Esc>   '.g:BufSelectKeyExit , "Exit the buffer list."]
-               \ ]
-    for key in helpText
-        echohl Identifier
-        echon printf("%9s", key[0])
-        echohl Normal
-        echon "  ".key[1]
-        echo ""
-    endfor
-    echohl None
+function! s:ToggleHelp()   " {{{1
+    let s:showingHelp = !s:showingHelp
+    call bufselect#RefreshBufferList(line('.'))
 endfunction
