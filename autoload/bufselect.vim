@@ -69,7 +69,7 @@ function! s:DisplayBuffers()   " {{{1
     let height = len(bufferList)+len(footer.text)
     call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
-    %delete _
+    silent %delete _
     call setline(1, bufferList)
     call append(line('$'), footer.text)
     setlocal nomodifiable
@@ -127,7 +127,7 @@ endfunction
 
 function! s:UpdateFooter()   " {{{1
     setlocal modifiable
-    /^[▀▔]\+$/,$delete
+    silent /^[▀▔]\+$/,$delete
     call append('$', s:Footer().text)
     setlocal nomodifiable
 endfunction
