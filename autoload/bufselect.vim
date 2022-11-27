@@ -101,7 +101,7 @@ function! s:Footer()   " {{{1
             \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
         \ printf('? for help  Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
     if !s:showingHelp
-        return {'text':footerText, 'width':strchars(footerText[1])}
+        return #{text:footerText, width:strchars(footerText[1])}
     else
         let helpText = [
             \ repeat("▁", 300),
@@ -121,7 +121,7 @@ function! s:Footer()   " {{{1
             \ printf("      0-9 ▏Move cursor to the next buffer by buffer number."),
             \ printf("<Esc> %3s ▏Exit the buffer list.",                                   g:BufSelectKeyExit)
             \ ]
-        return {'text':footerText + helpText, 'width':max(map(footerText[1:]+helpText[1:], {_,v->strchars(v)}))}
+        return #{text:footerText + helpText, width:max(map(footerText[1:]+helpText[1:], {_,v->strchars(v)}))}
     endif
 endfunction
 
