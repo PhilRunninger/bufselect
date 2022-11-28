@@ -33,20 +33,24 @@ nnoremap <silent> <leader>b :ShowBufferList<CR>
 These key mappings are used only within **BufSelect**. Some are configurable, while others are fixed.
 
 #### Configurable
-The mappings' corresponding variables and default values are shown here. Only the keys you want to change need to be included in your `.vimrc`. The first four keys also have a preview mode that does the same thing while keeping **BufSelect** open. Preview mode uses the letter <kbd>g</kbd> as a prefix.
+The mappings' corresponding variables and default values are shown here. Only the keys you want to change need to be included in your `.vimrc`. By default, preview mode mappings prepend the letter <kbd>g</kbd> to the corresponding non-preview mappings.
 ```vim
-" Preview mode keeps BufSelect open: `go`, `gs`, `gv`, `gt`.
-let g:BufSelectKeyOpen         = 'o'  " Open the buffer in the current window.
-let g:BufSelectKeySplit        = 's'  " Open the buffer in a new horzontal split.
-let g:BufSelectKeyVSplit       = 'v'  " Open the buffer in a new vertical split.
-let g:BufSelectKeyTab          = 't'  " Open the buffer in a new tab.
+let g:BufSelectKeyOpen          = 'o'  " Open the buffer in the current window.
+let g:BufSelectKeySplit         = 's'  " Open the buffer in a new horzontal split.
+let g:BufSelectKeyVSplit        = 'v'  " Open the buffer in a new vertical split.
+let g:BufSelectKeyTab           = 't'  " Open the buffer in a new tab.
 
-let g:BufSelectKeyDeleteBuffer = 'x'  " Close the buffer using vim's bwipeout command.
-let g:BufSelectKeySort         = 'S'  " Change the sort order.
-let g:BufSelectKeyChDir        = 'cd' " Change working directory to match the buffer's.
-let g:BufSelectKeyChDirUp      = '..' " Change working directory up one level from current.
-let g:BufSelectKeySelectOpen   = '#'  " Move cursor to the next listed open buffer.
-let g:BufSelectKeyExit         = 'q'  " Exit the buffer list.
+let g:BufSelectKeyPreviewOpen   = 'go'  " Preview the buffer in the current window, keeping BufSelect open.
+let g:BufSelectKeyPreviewSplit  = 'gs'  " Preview the buffer in a new horzontal split, keeping BufSelect open.
+let g:BufSelectKeyPreviewVSplit = 'gv'  " Preview the buffer in a new vertical split, keeping BufSelect open.
+let g:BufSelectKeyPreviewTab    = 'gt'  " Preview the buffer in a new tab, keeping BufSelect open.
+
+let g:BufSelectKeyDeleteBuffer  = 'x'  " Close the buffer using vim's bwipeout command.
+let g:BufSelectKeySort          = 'S'  " Change the sort order.
+let g:BufSelectKeyChDir         = 'cd' " Change working directory to match the buffer's.
+let g:BufSelectKeyChDirUp       = '..' " Change working directory up one level from current.
+let g:BufSelectKeySelectOpen    = '#'  " Move cursor to the next listed open buffer.
+let g:BufSelectKeyExit          = 'q'  " Exit the buffer list.
 ```
 
 #### Fixed

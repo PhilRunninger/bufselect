@@ -105,19 +105,19 @@ function! s:Footer()   " {{{1
     else
         let helpText = [
             \ repeat("▁", 300),
-            \ printf(" <CR> %3s ▏Open buffer in the current window.",                      g:BufSelectKeyOpen),
-            \ printf("      %3s ▏Open buffer in a new horizontal split.",                  g:BufSelectKeySplit),
-            \ printf("      %3s ▏Open buffer in a new vertical split.",                    g:BufSelectKeyVSplit),
-            \ printf("      %3s ▏Open buffer in a new tab.",                               g:BufSelectKeyTab),
-            \ printf("g<CR> %3s ▏Preview buffer in the current window.",               'g'.g:BufSelectKeyOpen),
-            \ printf("      %3s ▏Preview buffer in a new horizontal split.",           'g'.g:BufSelectKeySplit),
-            \ printf("      %3s ▏Preview buffer in a new vertical split.",             'g'.g:BufSelectKeyVSplit),
-            \ printf("      %3s ▏Preview buffer in a new tab.",                        'g'.g:BufSelectKeyTab),
-            \ printf("      %3s ▏Close the selected buffer using :bwipeout.",              g:BufSelectKeyDeleteBuffer),
-            \ printf("      %3s ▏Change the sort order.",                                  g:BufSelectKeySort),
-            \ printf("      %3s ▏Change working directory to selected buffer's folder.",   g:BufSelectKeyChDir),
-            \ printf("      %3s ▏Change working directory up one level from current.",     g:BufSelectKeyChDirUp),
-            \ printf("      %3s ▏Move cursor to the next open buffer.",                    g:BufSelectKeySelectOpen),
+            \ printf(" <CR> %3s ▏Open buffer in the current window.",                   g:BufSelectKeyOpen),
+            \ printf("      %3s ▏Open buffer in a new horizontal split.",               g:BufSelectKeySplit),
+            \ printf("      %3s ▏Open buffer in a new vertical split.",                 g:BufSelectKeyVSplit),
+            \ printf("      %3s ▏Open buffer in a new tab.",                            g:BufSelectKeyTab),
+            \ printf("g<CR> %3s ▏Preview buffer in the current window.",                g:BufSelectKeyPreviewOpen),
+            \ printf("      %3s ▏Preview buffer in a new horizontal split.",            g:BufSelectKeyPreviewSplit),
+            \ printf("      %3s ▏Preview buffer in a new vertical split.",              g:BufSelectKeyPreviewVSplit),
+            \ printf("      %3s ▏Preview buffer in a new tab.",                         g:BufSelectKeyPreviewTab),
+            \ printf("      %3s ▏Close the selected buffer using :bwipeout.",           g:BufSelectKeyDeleteBuffer),
+            \ printf("      %3s ▏Change the sort order.",                               g:BufSelectKeySort),
+            \ printf("      %3s ▏Change working directory to selected buffer's folder.",g:BufSelectKeyChDir),
+            \ printf("      %3s ▏Change working directory up one level from current.",  g:BufSelectKeyChDirUp),
+            \ printf("      %3s ▏Move cursor to the next open buffer.",                 g:BufSelectKeySelectOpen),
             \ printf("      0-9 ▏Move cursor to the next buffer by buffer number."),
             \ printf("<Esc> %3s ▏Exit the buffer list.",                                   g:BufSelectKeyExit)
             \ ]
@@ -142,23 +142,23 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                       '<Esc>')
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                          g:BufSelectKeyExit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",            '<CR>')
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",               g:BufSelectKeyOpen)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 0)<CR>",              g:BufSelectKeySplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>",     g:BufSelectKeyVSplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>",          g:BufSelectKeyTab)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                      '<Esc>')
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                      g:BufSelectKeyExit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",           '<CR>')
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",           g:BufSelectKeyOpen)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 0)<CR>",          g:BufSelectKeySplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>", g:BufSelectKeyVSplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>",      g:BufSelectKeyTab)
     execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           'g<CR>')
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           'g'.g:BufSelectKeyOpen)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 1)<CR>",          'g'.g:BufSelectKeySplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>", 'g'.g:BufSelectKeyVSplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>",      'g'.g:BufSelectKeyTab)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>CloseBuffer()<CR>",                            g:BufSelectKeyDeleteBuffer)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeSort()<CR>",                             g:BufSelectKeySort)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDir()<CR>",                              g:BufSelectKeyChDir)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDirUp()<CR>",                            g:BufSelectKeyChDirUp)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SelectOpenBuffers()<CR>",                      g:BufSelectKeySelectOpen)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           g:BufSelectKeyPreviewOpen)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 1)<CR>",          g:BufSelectKeyPreviewSplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>", g:BufSelectKeyPreviewVSplit)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>",      g:BufSelectKeyPreviewTab)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>CloseBuffer()<CR>",                        g:BufSelectKeyDeleteBuffer)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeSort()<CR>",                         g:BufSelectKeySort)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDir()<CR>",                          g:BufSelectKeyChDir)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDirUp()<CR>",                        g:BufSelectKeyChDirUp)
+    execute printf("nnoremap <buffer> <silent> %s :call <SID>SelectOpenBuffers()<CR>",                  g:BufSelectKeySelectOpen)
 
     for i in range(10)
         execute printf("nnoremap <buffer> <silent> %d call <SID>SelectByNumber(%d)<CR>", i, i)
