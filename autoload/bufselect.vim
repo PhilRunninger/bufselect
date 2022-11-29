@@ -179,8 +179,11 @@ function! s:GetSelectedBuffer()   " {{{1
 endfunction
 
 function! s:CloseBuffer()   " {{{1
-    execute 'bwipeout ' . s:GetSelectedBuffer()
-    call bufselect#RefreshBufferList(line('.'))
+    let selected = s:GetSelectedBuffer()
+    let currentLine = line('.')
+    call s:ExitBufSelect()      " Must exit if wiping out the only window's buffer.
+    execute 'bwipeout ' . selected
+    call bufselect#RefreshBufferList(currentLine)
 endfunction
 
 function! s:ChangeSort()   " {{{1
