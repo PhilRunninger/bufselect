@@ -7,7 +7,7 @@ syntax match BufSelectCurrent /CWD: .*/hs=s+5
 syntax match BufSelectCurrent /^\s*\d\+: %.*/
 syntax match BufSelectAlt /^\s*\d\+: #.*/
 syntax match BufSelectUnsaved /^\s*\d\+: ...+.*/
-syntax match BufSelectKeys /^.*▏/he=e-1
+syntax match BufSelectKeys /^.*┃/he=e-1
 
 function! s:SetHighlight(group, setting)
     execute printf('highlight %s %s %s', (a:setting =~ '=' ? '' : 'link '), a:group, a:setting)

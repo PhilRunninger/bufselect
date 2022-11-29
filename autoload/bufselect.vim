@@ -101,28 +101,28 @@ function! s:Footer()   " {{{1
             \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
         \ printf('? for help  Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
     if !s:showingHelp
-        return #{text:footerText, width:strchars(footerText[1])}
-    else
-        let helpText = [
-            \ repeat("▁", 300),
-            \ printf(" <CR> %3s ▏Open buffer in the current window.",                   g:BufSelectKeyOpen),
-            \ printf("      %3s ▏Open buffer in a new horizontal split.",               g:BufSelectKeySplit),
-            \ printf("      %3s ▏Open buffer in a new vertical split.",                 g:BufSelectKeyVSplit),
-            \ printf("      %3s ▏Open buffer in a new tab.",                            g:BufSelectKeyTab),
-            \ printf("g<CR> %3s ▏Preview buffer in the current window.",                g:BufSelectKeyPreviewOpen),
-            \ printf("      %3s ▏Preview buffer in a new horizontal split.",            g:BufSelectKeyPreviewSplit),
-            \ printf("      %3s ▏Preview buffer in a new vertical split.",              g:BufSelectKeyPreviewVSplit),
-            \ printf("      %3s ▏Preview buffer in a new tab.",                         g:BufSelectKeyPreviewTab),
-            \ printf("      %3s ▏Close the selected buffer using :bwipeout.",           g:BufSelectKeyDeleteBuffer),
-            \ printf("      %3s ▏Change the sort order.",                               g:BufSelectKeySort),
-            \ printf("      %3s ▏Change working directory to selected buffer's folder.",g:BufSelectKeyChDir),
-            \ printf("      %3s ▏Change working directory up one level from current.",  g:BufSelectKeyChDirUp),
-            \ printf("      %3s ▏Move cursor to the next open buffer.",                 g:BufSelectKeySelectOpen),
-            \ printf("      0-9 ▏Move cursor to the next buffer by buffer number."),
-            \ printf("<Esc> %3s ▏Exit the buffer list.",                                   g:BufSelectKeyExit)
-            \ ]
-        return #{text:footerText + helpText, width:max(map(footerText[1:]+helpText[1:], {_,v->strchars(v)}))}
+        return {'text':footerText, 'width':strchars(footerText[1])}
     endif
+
+    let helpText = [
+        \ repeat("▁", 300),
+        \ printf(" <CR> %3s┃Open buffer in the current window.",                   g:BufSelectKeyOpen),
+        \ printf("      %3s┃Open buffer in a new horizontal split.",               g:BufSelectKeySplit),
+        \ printf("      %3s┃Open buffer in a new vertical split.",                 g:BufSelectKeyVSplit),
+        \ printf("      %3s┃Open buffer in a new tab.",                            g:BufSelectKeyTab),
+        \ printf("g<CR> %3s┃Preview buffer in the current window.",                g:BufSelectKeyPreviewOpen),
+        \ printf("      %3s┃Preview buffer in a new horizontal split.",            g:BufSelectKeyPreviewSplit),
+        \ printf("      %3s┃Preview buffer in a new vertical split.",              g:BufSelectKeyPreviewVSplit),
+        \ printf("      %3s┃Preview buffer in a new tab.",                         g:BufSelectKeyPreviewTab),
+        \ printf("      %3s┃Close the selected buffer using :bwipeout.",           g:BufSelectKeyDeleteBuffer),
+        \ printf("      %3s┃Change the sort order.",                               g:BufSelectKeySort),
+        \ printf("      %3s┃Change working directory to selected buffer's folder.",g:BufSelectKeyChDir),
+        \ printf("      %3s┃Change working directory up one level from current.",  g:BufSelectKeyChDirUp),
+        \ printf("      %3s┃Move cursor to the next open buffer.",                 g:BufSelectKeySelectOpen),
+        \ printf("      0-9┃Move cursor to the next buffer by buffer number."),
+        \ printf("<Esc> %3s┃Exit the buffer list.",                                   g:BufSelectKeyExit)
+        \ ]
+    return {'text':footerText + helpText, 'width':max(map(footerText[1:]+helpText[1:], {_,v->strchars(v)}))}
 endfunction
 
 function! s:UpdateFooter()   " {{{1
