@@ -142,32 +142,32 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                      '<Esc>')
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ExitBufSelect()<CR>",                      g:BufSelectKeyExit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",           '<CR>')
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 0)<CR>",           g:BufSelectKeyOpen)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 0)<CR>",          g:BufSelectKeySplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>", g:BufSelectKeyVSplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>",      g:BufSelectKeyTab)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           'g<CR>')
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('buffer', 1)<CR>",           g:BufSelectKeyPreviewOpen)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('sbuffer', 1)<CR>",          g:BufSelectKeyPreviewSplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>", g:BufSelectKeyPreviewVSplit)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>",      g:BufSelectKeyPreviewTab)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>CloseBuffer()<CR>",                        g:BufSelectKeyDeleteBuffer)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeSort()<CR>",                         g:BufSelectKeySort)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDir()<CR>",                          g:BufSelectKeyChDir)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>ChangeDirUp()<CR>",                        g:BufSelectKeyChDirUp)
-    execute printf("nnoremap <buffer> <silent> %s :call <SID>SelectOpenBuffers()<CR>",                  g:BufSelectKeySelectOpen)
+    execute "nnoremap <buffer> <silent>            <Esc>                :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit         ." :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent>            <CR>                 :call <SID>SwitchBuffers('buffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen         ." :call <SID>SwitchBuffers('buffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit        ." :call <SID>SwitchBuffers('sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit       ." :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab          ." :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent>            g<CR>                :call <SID>SwitchBuffers('buffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewOpen  ." :call <SID>SwitchBuffers('buffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewSplit ." :call <SID>SwitchBuffers('sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewVSplit." :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewTab   ." :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer ." :call <SID>CloseBuffer()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort         ." :call <SID>ChangeSort()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir        ." :call <SID>ChangeDir()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp      ." :call <SID>ChangeDirUp()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySelectOpen   ." :call <SID>SelectOpenBuffers()<CR>"
 
     for i in range(10)
-        execute printf("nnoremap <buffer> <silent> %d :call <SID>SelectByNumber(%d)<CR>", i, i)
+        execute 'nnoremap <buffer> <silent> '.i." :call <SID>SelectByNumber(".i.")<CR>"
     endfor
 
     nnoremap <buffer> <silent> ? <Cmd>call <SID>ToggleHelp()<CR>
     augroup BufSelectAuGroup
         autocmd!
-        autocmd CursorMoved <buffer> let b:limit=line('$')-len(<SID>Footer().text)|if line('.')>b:limit|call cursor(b:limit, 1)|endif
+        autocmd CursorMoved <buffer> call cursor(min([line('.'),line('$')-len(<SID>Footer().text)]),1)
         autocmd BufLeave <buffer> call s:ExitBufSelect()
     augroup END
 endfunction
