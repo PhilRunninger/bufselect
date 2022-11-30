@@ -133,9 +133,9 @@ function! s:UpdateFooter()   " {{{1
 endfunction
 
 function! s:SetPosition(currentLine)   " {{{1
-    normal! gg0
+    call cursor(1,1)
     if a:currentLine != -1
-        execute 'normal! '.a:currentLine.'gg0'
+        call cursor(a:currentLine,1)
     elseif search('^\s*\d\+:\s*%', 'w') == 0
         call search('^\s*\d\+:\s*#', 'w')
     endif
@@ -161,13 +161,13 @@ function! s:SetupCommands()   " {{{1
     execute printf("nnoremap <buffer> <silent> %s :call <SID>SelectOpenBuffers()<CR>",                  g:BufSelectKeySelectOpen)
 
     for i in range(10)
-        execute printf("nnoremap <buffer> <silent> %d call <SID>SelectByNumber(%d)<CR>", i, i)
+        execute printf("nnoremap <buffer> <silent> %d :call <SID>SelectByNumber(%d)<CR>", i, i)
     endfor
 
     nnoremap <buffer> <silent> ? <Cmd>call <SID>ToggleHelp()<CR>
     augroup BufSelectAuGroup
         autocmd!
-        autocmd CursorMoved <buffer> if line('.') > line('$')-len(<SID>Footer().text) | execute "normal! ".(line('$')-len(<SID>Footer().text))."gg" | endif
+        autocmd CursorMoved <buffer> let b:limit=line('$')-len(<SID>Footer().text)|if line('.')>b:limit|call cursor(b:limit, 1)|endif
         autocmd BufLeave <buffer> call s:ExitBufSelect()
     augroup END
 endfunction
@@ -210,10 +210,18 @@ function! s:SelectOpenBuffers()   " {{{1
 endfunction
 
 function! s:SelectByNumber(num)   " {{{1
+    let currentLine = line('.')
+    call cursor(1,1)
+
     let s:bufnrSearch = 10*s:bufnrSearch + a:num
-    while !search('^\s*'.s:bufnrSearch.':', 'w') && s:bufnrSearch > 9
+    let found = search('^\s*'.s:bufnrSearch.':', 'cW') || search('^\s*'.s:bufnrSearch.'\d*:', 'cW')
+    while !found && s:bufnrSearch > 9
         let s:bufnrSearch = str2nr(s:bufnrSearch[1:])
+        let found = search('^\s*'.s:bufnrSearch.':', 'cW') || search('^\s*'.s:bufnrSearch.'\d*:', 'cW')
     endwhile
+    if !found
+        call cursor(currentLine,1)
+    endif
 endfunction
 
 function! s:ToggleHelp()   " {{{1
