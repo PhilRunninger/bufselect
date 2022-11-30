@@ -11,25 +11,6 @@ function! bufselect#RefreshBufferList(currentLine)   " {{{1
     call s:SetupCommands()
 endfunction
 
-function! s:ExitBufSelect()   "{{{1
-    if exists('s:bufSelectWindow')
-        call nvim_win_hide(s:bufSelectWindow)
-    endif
-    unlet! s:bufSelectWindow
-endfunction
-
-function! s:SwitchBuffers(windowCmd, preview)   " {{{1
-    let bufNum = s:GetSelectedBuffer()
-    let currentLine = line('.')
-    call s:ExitBufSelect()
-    if bufexists(bufNum)
-        execute a:windowCmd . bufNum
-    endif
-    if a:preview
-        call bufselect#RefreshBufferList(currentLine)
-    endif
-endfunction
-
 function! s:GetBufferList()   " {{{1
     let bufferList = filter(split(execute('buffers'),'\n'), {_,v -> v !~? '\(Location\|Quickfix\) List'})
     let Parse = {t -> matchlist(t, '^\s*\zs\(\d\+\)\(.\{-}\)"\(.*\)"')}
@@ -64,8 +45,7 @@ endfunction
 function! s:DisplayBuffers()   " {{{1
     let bufferList = s:GetBufferList()
     let footer = s:Footer()
-    let width = max(map(copy(bufferList),{_,l -> strchars(l)}))+1
-    let width = max([footer.width+1, width])
+    let width = max([footer.width] + map(copy(bufferList),{_,l -> strchars(l)})) + 1
     let height = len(bufferList)+len(footer.text)
     call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
@@ -172,10 +152,29 @@ function! s:SetupCommands()   " {{{1
     augroup END
 endfunction
 
+function! s:ExitBufSelect()   "{{{1
+    if exists('s:bufSelectWindow')
+        call nvim_win_hide(s:bufSelectWindow)
+    endif
+    unlet! s:bufSelectWindow
+endfunction
+
 function! s:GetSelectedBuffer()   " {{{1
     let lineOfText = getline(line('.'))
     let bufNum = matchstr(lineOfText, '^\s*\zs\d\+\ze:')
     return str2nr(bufNum)
+endfunction
+
+function! s:SwitchBuffers(windowCmd, preview)   " {{{1
+    let bufNum = s:GetSelectedBuffer()
+    let currentLine = line('.')
+    call s:ExitBufSelect()
+    if bufexists(bufNum)
+        execute a:windowCmd . bufNum
+    endif
+    if a:preview
+        call bufselect#RefreshBufferList(currentLine)
+    endif
 endfunction
 
 function! s:CloseBuffer()   " {{{1
