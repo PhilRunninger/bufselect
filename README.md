@@ -73,7 +73,7 @@ let g:BufSelectSortOrder = 'Name'
 ```
 Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
 
-`'Status'` refers to whether or not a buffer is loaded or visible. See `:help :ls`, which states:
+`'Status'` refers to whether a buffer is loaded or visible. See `:help :ls`, which states:
 
 * `a` an active buffer: it is loaded and visible
 * `h` a hidden buffer: it is loaded, but currently not displayed in a window
