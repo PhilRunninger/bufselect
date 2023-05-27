@@ -95,6 +95,7 @@ function! s:Footer()   " {{{1
         \ printf("      %3s┃Preview buffer in a new horizontal split.",            g:BufSelectKeyPreviewSplit),
         \ printf("      %3s┃Preview buffer in a new vertical split.",              g:BufSelectKeyPreviewVSplit),
         \ printf("      %3s┃Preview buffer in a new tab.",                         g:BufSelectKeyPreviewTab),
+        \ printf("      %3s┃Find buffer in any open window.",                      g:BufSelectKeyFind),
         \ printf("      %3s┃Close the selected buffer using :bwipeout.",           g:BufSelectKeyDeleteBuffer),
         \ printf("      %3s┃Change the sort order.",                               g:BufSelectKeySort),
         \ printf("      %3s┃Change working directory to selected buffer's folder.",g:BufSelectKeyChDir),
@@ -135,6 +136,7 @@ function! s:SetupCommands()   " {{{1
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewSplit ." :call <SID>SwitchBuffers('sbuffer', 1)<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewVSplit." :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewTab   ." :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyFind         ." :call <SID>FindInWindow()<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer ." :call <SID>CloseBuffer()<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort         ." :call <SID>ChangeSort()<CR>"
     execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir        ." :call <SID>ChangeDir()<CR>"
@@ -176,6 +178,19 @@ function! s:SwitchBuffers(windowCmd, preview)   " {{{1
     if a:preview
         call bufselect#RefreshBufferList(currentLine)
     endif
+endfunction
+
+function! s:FindInWindow()   " {{{1
+    let selected = s:GetSelectedBuffer()
+    for i in range(1,tabpagenr('$'))
+        let win = index(tabpagebuflist(i),selected)
+        if  win > -1
+            execute i . 'tabnext'
+            execute (win+1) . 'wincmd w'
+            return
+        endif
+    endfor
+    echo 'Buffer ' . selected . ' is not open in any window.'
 endfunction
 
 function! s:CloseBuffer()   " {{{1
