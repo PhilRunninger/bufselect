@@ -10,6 +10,7 @@ let g:BufSelectKeyPreviewOpen   = get(g:,'BufSelectKeyPreviewOpen',  'g'.g:BufSe
 let g:BufSelectKeyPreviewSplit  = get(g:,'BufSelectKeyPreviewSplit', 'g'.g:BufSelectKeySplit)
 let g:BufSelectKeyPreviewVSplit = get(g:,'BufSelectKeyPreviewVSplit','g'.g:BufSelectKeyVSplit)
 let g:BufSelectKeyPreviewTab    = get(g:,'BufSelectKeyPreviewTab',   'g'.g:BufSelectKeyTab)
+let g:BufSelectKeyFind          = get(g:,'BufSelectKeyFind',         'f')
 let g:BufSelectKeyDeleteBuffer  = get(g:,'BufSelectKeyDeleteBuffer', 'x')
 let g:BufSelectKeySort          = get(g:,'BufSelectKeySort',         'S')
 let g:BufSelectKeyChDir         = get(g:,'BufSelectKeyChDir',        'cd')

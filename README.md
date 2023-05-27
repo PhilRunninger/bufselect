@@ -6,7 +6,10 @@
 
 * A [single command](#command) to kick things off.
 * A simple list in a floating window, showing the buffer number, filename, and relative path of all listed buffers. The list is generated each time **BufSelect** is displayed, thereby simplifying the code considerably.
-![image](media/darkScreenshot.png)
+
+    ![image](media/darkScreenshot.png)
+    </br>**Figure 1**: BufSelect on a dark background
+
 * A few [key mappings](#key-mappings) to open and delete buffers, sort the list, change working directory, and quickly move between buffers.
 * Other settings define [sort order](#sort-order) and [custom highlighting](#custom-highlighting).
 
@@ -45,6 +48,7 @@ let g:BufSelectKeyPreviewSplit  = 'gs'  " Preview the buffer in a new horzontal 
 let g:BufSelectKeyPreviewVSplit = 'gv'  " Preview the buffer in a new vertical split, keeping BufSelect open.
 let g:BufSelectKeyPreviewTab    = 'gt'  " Preview the buffer in a new tab, keeping BufSelect open.
 
+let g:BufSelectKeyFind          = 'f'  " Find the buffer in any open window, and go there.
 let g:BufSelectKeyDeleteBuffer  = 'x'  " Close the buffer using vim's bwipeout command.
 let g:BufSelectKeySort          = 'S'  " Change the sort order.
 let g:BufSelectKeyChDir         = 'cd' " Change working directory to match the buffer's.
@@ -58,8 +62,9 @@ let g:BufSelectKeyExit          = 'q'  " Exit the buffer list.
 * <kbd>Esc</kbd> exits the buffer list - the same as `g:BufSelectKeyExit`.
 * <kbd>0</kbd>...<kbd>9</kbd> moves the cursor to the next buffer matching the cumulatively-typed buffer number.
 * <kbd>?</kbd> show/hides short descriptions of these commands.
-![image](media/lightScreenshot.png)
 
+    ![image](media/lightScreenshot.png)
+    </br>**Figure 2**: BufSelect on a light background, with help text visible
 
 ### Sort Order
 The default sort order can be set with this statement, which shows the default:
