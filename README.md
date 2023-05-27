@@ -67,33 +67,24 @@ let g:BufSelectKeyExit          = 'q'  " Exit the buffer list.
     </br>**Figure 2**: BufSelect on a light background, with help text visible
 
 ### Sort Order
-The default sort order can be set with this statement, which shows the default:
+The initial sort order can be set with this statement, which is showing the default value:
 ```vim
 let g:BufSelectSortOrder = 'Name'
 ```
 Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
 
-`'Status'` refers to whether or not that buffer is loaded or visible. See `:help :ls`, which states:
+`'Status'` refers to whether or not a buffer is loaded or visible. See `:help :ls`, which states:
 
 * `a` an active buffer: it is loaded and visible
 * `h` a hidden buffer: it is loaded, but currently not displayed in a window
 * ` `(space) indicates a file that's been added (see `:help :badd`), but is not yet loaded.
 
 ### Custom Highlighting
-The colors used in **BufSelect** were picked to work in both dark and light backgrounds, but they can be customized if desired, by changing these variables. The syntax below shows how to hard-code the colors. The value must adhere to valid syntax when used as `{args}` in a `:highlight {group-name} {args}` statement. See `:help :highlight-args` for more details. The default values are:
+The colors used in **BufSelect** were picked to work in both dark and light backgrounds, but they can be customized if desired, by overriding these highlight groups. To ensure correct timing, put your `highlight` statements in a file named `after/syntax/bufselect.vim` in your nvim config directory. The highlight groups are:
 
-```vim
-let g:BufSelectHighlightCurrent = 'guibg=NONE guifg=#5F87FF ctermbg=NONE ctermfg=69'
-let g:BufSelectHighlightAlt     = 'guibg=NONE guifg=#5FAF00 ctermbg=NONE ctermfg=70'
-let g:BufSelectHighlightUnsaved = 'guibg=NONE guifg=#FF5F00 ctermbg=NONE ctermfg=202'
-let g:BufSelectHighlightSort    = 'guibg=NONE guifg=#FF8700 ctermbg=NONE ctermfg=208'
-```
-
-To match a colorscheme's colors, just specify the name of the highlight group whose formatting you want to use. These are the values **BufSelect** used before customization was available.
-
-```vim
-let g:BufSelectHighlightCurrent = 'Identifier'
-let g:BufSelectHighlightAlt     = 'Label'
-let g:BufSelectHighlightUnsaved = 'Error'
-let g:BufSelectHighlightSort    = 'Function'
-```
+* `BufSelectSort` - the sort indicator
+* `BufSelectCurrent` - the current buffer, indicated by a `%`, and the current working directory
+* `BufSelectAlt` - the alternate buffer, indicated by a `#`
+* `BufSelectUnsaved` - unsaved buffers, indicated by a `+`
+* `BufSelectHelp` - the question mark in `? for help`
+* `BufSelectKeys` - mapped keys in the help text
