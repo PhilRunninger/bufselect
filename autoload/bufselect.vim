@@ -190,7 +190,7 @@ function! s:FindInWindow()   " {{{1
             return
         endif
     endfor
-    echo 'Buffer is not open in any window.'
+    echo 'Buffer ' . selected . ' is not open in any window.'
 endfunction
 
 function! s:CloseBuffer()   " {{{1
