@@ -17,5 +17,6 @@ let g:BufSelectKeyChDir         = get(g:,'BufSelectKeyChDir',        'cd')
 let g:BufSelectKeyChDirUp       = get(g:,'BufSelectKeyChDirUp',      '..')
 let g:BufSelectKeySelectOpen    = get(g:,'BufSelectKeySelectOpen',   '#')
 let g:BufSelectSortOrder        = get(g:,'BufSelectSortOrder',       'Name')
+let g:BufSelectFloatWinConfig   = get(g:, 'BufSelectFloatWinConfig', {})
 
 command! ShowBufferList :call bufselect#RefreshBufferList(-1)
