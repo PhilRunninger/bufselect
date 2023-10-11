@@ -9,7 +9,6 @@ function! bufselect#RefreshBufferList(currentLine)   " {{{1
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
     call s:SetupCommands()
-    redraw!
 endfunction
 
 function! s:GetBufferList()   " {{{1
