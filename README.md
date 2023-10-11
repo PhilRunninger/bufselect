@@ -79,7 +79,8 @@ For example, customize `title` and `border` for float window:
 ```vim
 let g:BufSelectFloatWinConfig = { 'border': 'single', title: ' Buffers: ' }
 ```
-![image](media/floatwinconfig.png)
+
+    ![image](media/floatwinconfig.png)
 
 For more for details, please check `:h nvim_open_win()`.
 
