@@ -35,9 +35,16 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
     call s:ExitBufSelect()
     let hostWidth = nvim_win_get_width(0)
     let hostHeight = nvim_win_get_height(0)
-    let config = {'relative':'win', 'row':(hostHeight-a:height)/2, 'col':(hostWidth-a:width)/2,
-                \ 'height':a:height, 'width':a:width,
-                \ 'border':'double', 'noautocmd':1, 'style':'minimal'}
+    let config = extend({
+                \ 'relative': 'win',
+                \ 'row': (hostHeight - a:height) / 2,
+                \ 'col': (hostWidth - a:width) / 2,
+                \ 'height': a:height,
+                \ 'width': a:width,
+                \ 'border': 'double',
+                \ 'noautocmd': 1,
+                \ 'style': 'minimal',
+                \ }, g:BufSelectFloatWinConfig)
     let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
     setlocal syntax=bufselect nowrap bufhidden=wipe cursorline scrolloff=20
     let s:bufnrSearch = 0

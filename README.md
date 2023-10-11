@@ -66,6 +66,24 @@ let g:BufSelectKeyExit          = 'q'  " Exit the buffer list.
     ![image](media/lightScreenshot.png)
     </br>**Figure 2**: BufSelect on a light background, with help text visible
 
+### Customize Float Window
+
+Float window config can be customized with `g:BufSelectFloatWinConfig`. Default value:
+
+```vim
+let g:BufSelectFloatWinConfig = {}
+```
+
+For example, customize `title` and `border` for float window:
+
+```vim
+let g:BufSelectFloatWinConfig = { 'border': 'single', title: ' Buffers: ' }
+```
+
+![image](media/floatwinconfig.png)
+
+For more for details, please check `:h nvim_open_win()`.
+
 ### Sort Order
 The initial sort order can be set with this statement, which is showing the default value:
 ```vim
