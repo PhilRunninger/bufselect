@@ -106,3 +106,17 @@ The colors used in **BufSelect** were picked to work in both dark and light back
 * `BufSelectUnsaved` - unsaved buffers, indicated by a `+`
 * `BufSelectHelp` - the question mark in `? for help`
 * `BufSelectKeys` - mapped keys in the help text
+
+Float window highlight can be customized with `g:BufSelectFloatWinHighlight`. Default value:
+
+```vim
+let g:BufSelectFloatWinHighlight = ''
+```
+
+For example, use same background like normal buffer for some colorschemes that don't define `NormalFloat` highlight group:
+
+```vim
+let g:BufSelectFloatWinHighlight = 'NormalFloat:Normal'
+```
+
+For more details, please check `:h 'winhl'`

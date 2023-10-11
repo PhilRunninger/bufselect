@@ -18,5 +18,6 @@ let g:BufSelectKeyChDirUp       = get(g:,'BufSelectKeyChDirUp',      '..')
 let g:BufSelectKeySelectOpen    = get(g:,'BufSelectKeySelectOpen',   '#')
 let g:BufSelectSortOrder        = get(g:,'BufSelectSortOrder',       'Name')
 let g:BufSelectFloatWinConfig   = get(g:, 'BufSelectFloatWinConfig', {})
+let g:BufSelectFloatWinHighlight = get(g:, 'BufSelectFloatWinHighlight', '')
 
 command! ShowBufferList :call bufselect#RefreshBufferList(-1)

@@ -46,6 +46,9 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
                 \ 'style': 'minimal',
                 \ }, g:BufSelectFloatWinConfig)
     let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
+    if strlen(g:BufSelectFloatWinHighlight)
+        call nvim_win_set_option(s:bufSelectWindow, 'winhl', g:BufSelectFloatWinHighlight)
+    endif
     setlocal syntax=bufselect nowrap bufhidden=wipe cursorline scrolloff=20
     let s:bufnrSearch = 0
 endfunction
