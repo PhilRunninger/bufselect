@@ -33,10 +33,10 @@ endfunction
 
 function! s:OpenBufSelectWindow(width, height)   " {{{1
     call s:ExitBufSelect()
-    let hostWidth = nvim_win_get_width(0)
-    let hostHeight = nvim_win_get_height(0)
+    let hostWidth = &columns
+    let hostHeight = &lines - &cmdheight - 1
     let config = extend({
-                \ 'relative': 'win',
+                \ 'relative': 'editor',
                 \ 'row': (hostHeight - a:height) / 2,
                 \ 'col': (hostWidth - a:width) / 2,
                 \ 'height': a:height,
