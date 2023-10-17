@@ -5,7 +5,12 @@
 let s:showingHelp = 0
 
 function! bufselect#RefreshBufferList(currentLine)   " {{{1
-    call s:DisplayBuffers()
+    let bufferList = s:GetBufferList()
+    if empty(bufferList)
+        echo 'No buffers!'
+        return
+    endif
+    call s:DisplayBuffers(bufferList)
     call s:SortBufferList()
     call s:SetPosition(a:currentLine)
     call s:SetupCommands()
@@ -49,15 +54,14 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
     let s:bufnrSearch = 0
 endfunction
 
-function! s:DisplayBuffers()   " {{{1
-    let bufferList = s:GetBufferList()
+function! s:DisplayBuffers(bufferList)   " {{{1
     let footer = s:Footer()
-    let width = max([footer.width] + map(copy(bufferList),{_,l -> strchars(l)})) + 1
-    let height = len(bufferList)+len(footer.text)
+    let width = max([footer.width] + map(copy(a:bufferList), {_,l -> strchars(l)})) + 1
+    let height = len(a:bufferList) + len(footer.text)
     call s:OpenBufSelectWindow(width, height)
     setlocal modifiable
     silent %delete _
-    call setline(1, bufferList)
+    call setline(1, a:bufferList)
     call append(line('$'), footer.text)
     setlocal nomodifiable
 endfunction
