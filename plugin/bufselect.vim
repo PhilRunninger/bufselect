@@ -1,11 +1,10 @@
 " BufSelect - a Vim buffer selection and deletion utility
 
 " Show depcrecation warning.
-if max(map([
-        \ 'KeyOpen',        'KeySplit',        'KeyVSplit',        'KeyTab',
-        \ 'KeyPreviewOpen', 'KeyPreviewSplit', 'KeyPreviewVSplit', 'KeyPreviewTab',
-        \ 'KeyExit',        'KeyFind',         'KeyDeleteBuffer',  'KeySort',
-        \ 'KeyChDir',       'KeyChDirUp',      'KeySelectOpen',    'SortOrder',     'FloatWinConfig'],
+if max(map(['KeyOpen', 'KeyPreviewOpen',   'KeyChDir',   'KeyDeleteBuffer',
+        \ 'KeySplit',  'KeyPreviewSplit',  'KeyChDirUp', 'KeySelectOpen',
+        \ 'KeyVSplit', 'KeyPreviewVSplit', 'KeyFind',    'SortOrder',
+        \ 'KeyTab',    'KeyPreviewTab',    'KeyExit',    'KeySort',         'FloatWinConfig'],
         \ {_,v -> exists('g:BufSelect'.v)})) == 1
     echohl WarningMsg
     echomsg 'BufSelect: Deprecated settings were detected. Use g:BufSelectSetup instead.'
@@ -45,7 +44,7 @@ let g:BufSelectSetup = s:deep_extend(
         \ },
         \ 'sortOrder':   get(g:,'BufSelectSortOrder',        'Name'),
         \ 'win': {
-            \ 'config':  get(g:,'BufSelectFloatWinConfig',   {}),
+            \ 'config':  get(g:,'BufSelectFloatWinConfig',   {'border': 'double'}),
             \ 'hl':      ''
         \ },
     \ },

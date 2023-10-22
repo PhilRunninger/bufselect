@@ -45,7 +45,6 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
                 \ 'col': (hostWidth - a:width) / 2,
                 \ 'height': a:height,
                 \ 'width': a:width,
-                \ 'border': 'double',
                 \ 'noautocmd': 1,
                 \ 'style': 'minimal',
                 \ }, g:BufSelectSetup.win.config)
