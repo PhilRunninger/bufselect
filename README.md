@@ -30,17 +30,20 @@ nnoremap <silent> <leader>b :ShowBufferList<CR>
 
 ## Settings
 
-Settings for **BufSelect** were formerly specified by 15 separate variables. They are now deprecated in favor of a single dictionary variable named `g:BufSelectSetup`. Using any of the old variables will still work but will cause a warning to be displayed.
+Settings for **BufSelect** formerly were specified by 15 separate variables. They now are deprecated in favor of a single dictionary variable named `g:BufSelectSetup`. Using any of the old variables still will work but will cause a warning to be displayed.
 
-The structure of the dictionary follows. Only the settings you want to override need to be specified. All others will have the default value, which is also shown. The corresponding old variables are in the second column.
+The structure of the dictionary follows. Only the settings you want to override need to be specified. All others will have the default value, which also is shown. The corresponding old variables are in the second column.
 
 <table>
-    <tr>
-        <td>Settings</td><td>Corresponding Old Variable</td>
-    </tr>
-    <tr>
-        <td>
-            <pre>
+    <thead>
+        <tr>
+            <th>Settings</th><th>Corresponding Old Variable</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>
+<pre>
 let g:BufSelectSetup =
   \ {
     \ 'mappings': {
@@ -66,10 +69,10 @@ let g:BufSelectSetup =
       \ 'hl':      ''
     \ }
   \ }
-            </pre>
-        </td>
-        <td>
-            <pre>
+</pre>
+            </td>
+            <td>
+<pre>
 &nbsp;
 &nbsp;
 &nbsp;
@@ -93,9 +96,12 @@ g:BufSelectSortOrder
 &nbsp;
 g:BufSelectFloatWinConfig
 (This is new. No old variable.)
-            </pre>
-        </td>
-    </tr>
+&nbsp;
+&nbsp;
+</pre>
+            </td>
+        </tr>
+    </tbody>
 </table>
 
 ### Key Mappings
@@ -104,18 +110,18 @@ The `'mappings'` dictionary defines the key mappings that work only within **Buf
 
 Mapping | Function
 ---|---
-`'open'`    | Open the buffer in the current window.
+`'open'`    | Open the buffer in the current window, meaning the one under the **BufSelect** floating window.
 `'split'`   | Open the buffer in a new horzontal split.
 `'vsplit'`  | Open the buffer in a new vertical split.
 `'tab'`     | Open the buffer in a new tab.
 |
-`'gopen'`   | Preview the buffer in the current window, keeping BufSelect open.
-`'gsplit'`  | Preview the buffer in a new horzontal split, keeping BufSelect open.
-`'gvsplit'` | Preview the buffer in a new vertical split, keeping BufSelect open.
-`'gtab'`    | Preview the buffer in a new tab, keeping BufSelect open.
+`'gopen'`   | Preview the buffer in the current window, keeping **BufSelect** open.
+`'gsplit'`  | Preview the buffer in a new horzontal split, keeping **BufSelect** open.
+`'gvsplit'` | Preview the buffer in a new vertical split, keeping **BufSelect** open.
+`'gtab'`    | Preview the buffer in a new tab, keeping **BufSelect** open.
 |
 `'find'`    | Find the buffer in any open window, and go there.
-`'delete'`  | Close the buffer using vim's bwipeout command.
+`'delete'`  | Close the buffer using vim's `bwipeout` command.
 `'sort'`    | Change the sort order.
 `'cd'`      | Change working directory to match the buffer's.
 `'cdup'`    | Change working directory up one level from current.
@@ -129,13 +135,13 @@ Mapping | Function
 <kbd>Enter</kbd> | opens a buffer in the current window. It's the same as `'open'`.
 <kbd>Esc</kbd> | exits the buffer list - the same as `'exit'`.
 <kbd>0</kbd>...<kbd>9</kbd> | moves the cursor to the next buffer matching the cumulatively-typed buffer number.
-<kbd>?</kbd> | show/hides short descriptions of all mappings.
+<kbd>?</kbd> | shows/hides short descriptions of all mappings.
 
 ![image](media/lightScreenshot.png)
 <br/>**Figure 2**: BufSelect on a light background, with help text visible
 
 ### Sort Order
-The initial sort order is set in the `'sortOrder'` key-value pair. Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
+The initial sort order is set by the `'sortOrder'` setting. Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
 
 `'Status'` refers to whether a buffer is loaded or visible. See `:help :ls`, which states:
 
@@ -164,7 +170,7 @@ For more for details, please check `:help nvim_open_win()`.
 let g:BufSelectSetup = {'win': {'hl': 'NormalFloat:Normal,BufSelectSort:Pmenu,BufSelectCurrent:Keyword'}}
 ```
 
-The highlight groups are:
+The highlight groups defined for **BufSelect** are:
 
 * `BufSelectSort` - the sort indicator
 * `BufSelectCurrent` - the current buffer also indicated by a `%`, and the current working directory
