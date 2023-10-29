@@ -45,11 +45,11 @@ function! s:OpenBufSelectWindow(width, height)   " {{{1
                 \ 'col': (hostWidth - a:width) / 2,
                 \ 'height': a:height,
                 \ 'width': a:width,
-                \ 'border': 'double',
                 \ 'noautocmd': 1,
                 \ 'style': 'minimal',
-                \ }, g:BufSelectFloatWinConfig)
+                \ }, g:BufSelectSetup.win.config)
     let s:bufSelectWindow = nvim_open_win(nvim_create_buf(0,1),1,config)
+    call nvim_win_set_option(s:bufSelectWindow, 'winhl', g:BufSelectSetup.win.hl)
     setlocal syntax=bufselect nowrap bufhidden=wipe cursorline scrolloff=20
     let s:bufnrSearch = 0
 endfunction
@@ -69,14 +69,14 @@ endfunction
 function! s:SortBufferList()   " {{{1
     setlocal modifiable
     1,/^[▀▔]\+$/-1sort n
-    if g:BufSelectSortOrder != "Num"
+    if g:BufSelectSetup.sortOrder != "Num"
         execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:filenameColumn-1) . '}/'
     endif
-    if g:BufSelectSortOrder == "Status"
+    if g:BufSelectSetup.sortOrder == "Status"
         execute '1,/^[▀▔]\+$/-1sort! /^\s*\d\+:..\zs.\ze/ r'
-    elseif g:BufSelectSortOrder == "Extension"
+    elseif g:BufSelectSetup.sortOrder == "Extension"
         execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:extensionColumn-1) . '}/'
-    elseif g:BufSelectSortOrder == "Path"
+    elseif g:BufSelectSetup.sortOrder == "Path"
         execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:pathColumn-1) . '}/'
     endif
     setlocal nomodifiable
@@ -85,34 +85,34 @@ endfunction
 function! s:Footer()   " {{{1
     let footerText = [
         \ printf('%s▔▔▔%s▔▔▔%s▔▔%s▔▔%s',
-            \ repeat(g:BufSelectSortOrder == "Num"       ? '▀' : '▔', 5),
-            \ repeat(g:BufSelectSortOrder == "Status"    ? '▀' : '▔', 1),
-            \ repeat(g:BufSelectSortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
-            \ repeat(g:BufSelectSortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
-            \ repeat(g:BufSelectSortOrder == "Path"      ? '▀' : '▔', 300)),
-        \ printf('? for help  Sort: %-9s  CWD: %s', g:BufSelectSortOrder, fnamemodify(getcwd(),':~')) ]
+            \ repeat(g:BufSelectSetup.sortOrder == "Num"       ? '▀' : '▔', 5),
+            \ repeat(g:BufSelectSetup.sortOrder == "Status"    ? '▀' : '▔', 1),
+            \ repeat(g:BufSelectSetup.sortOrder == "Name"      ? '▀' : '▔', s:extensionColumn - s:filenameColumn - 2),
+            \ repeat(g:BufSelectSetup.sortOrder == "Extension" ? '▀' : '▔', s:pathColumn - s:extensionColumn - 2),
+            \ repeat(g:BufSelectSetup.sortOrder == "Path"      ? '▀' : '▔', 300)),
+        \ printf('? for help  Sort: %-9s  CWD: %s', g:BufSelectSetup.sortOrder, fnamemodify(getcwd(),':~')) ]
     if !s:showingHelp
         return {'text':footerText, 'width':strchars(footerText[1])}
     endif
 
     let helpText = [
         \ repeat("▁", 300),
-        \ printf(" <CR> %3s┃Open buffer in the current window.",                   g:BufSelectKeyOpen),
-        \ printf("      %3s┃Open buffer in a new horizontal split.",               g:BufSelectKeySplit),
-        \ printf("      %3s┃Open buffer in a new vertical split.",                 g:BufSelectKeyVSplit),
-        \ printf("      %3s┃Open buffer in a new tab.",                            g:BufSelectKeyTab),
-        \ printf("g<CR> %3s┃Preview buffer in the current window.",                g:BufSelectKeyPreviewOpen),
-        \ printf("      %3s┃Preview buffer in a new horizontal split.",            g:BufSelectKeyPreviewSplit),
-        \ printf("      %3s┃Preview buffer in a new vertical split.",              g:BufSelectKeyPreviewVSplit),
-        \ printf("      %3s┃Preview buffer in a new tab.",                         g:BufSelectKeyPreviewTab),
-        \ printf("      %3s┃Find buffer in any open window.",                      g:BufSelectKeyFind),
-        \ printf("      %3s┃Close the selected buffer using :bwipeout.",           g:BufSelectKeyDeleteBuffer),
-        \ printf("      %3s┃Change the sort order.",                               g:BufSelectKeySort),
-        \ printf("      %3s┃Change working directory to selected buffer's folder.",g:BufSelectKeyChDir),
-        \ printf("      %3s┃Change working directory up one level from current.",  g:BufSelectKeyChDirUp),
-        \ printf("      %3s┃Move cursor to the next open buffer.",                 g:BufSelectKeySelectOpen),
+        \ printf(" <CR> %3s┃Open buffer in the current window.",                   g:BufSelectSetup.mappings.open),
+        \ printf("      %3s┃Open buffer in a new horizontal split.",               g:BufSelectSetup.mappings.split),
+        \ printf("      %3s┃Open buffer in a new vertical split.",                 g:BufSelectSetup.mappings.vsplit),
+        \ printf("      %3s┃Open buffer in a new tab.",                            g:BufSelectSetup.mappings.tab),
+        \ printf("g<CR> %3s┃Preview buffer in the current window.",                g:BufSelectSetup.mappings.gopen),
+        \ printf("      %3s┃Preview buffer in a new horizontal split.",            g:BufSelectSetup.mappings.gsplit),
+        \ printf("      %3s┃Preview buffer in a new vertical split.",              g:BufSelectSetup.mappings.gvsplit),
+        \ printf("      %3s┃Preview buffer in a new tab.",                         g:BufSelectSetup.mappings.gtab),
+        \ printf("      %3s┃Find buffer in any open window.",                      g:BufSelectSetup.mappings.find),
+        \ printf("      %3s┃Close the selected buffer using :bwipeout.",           g:BufSelectSetup.mappings.delete),
+        \ printf("      %3s┃Change the sort order.",                               g:BufSelectSetup.mappings.sort),
+        \ printf("      %3s┃Change working directory to selected buffer's folder.",g:BufSelectSetup.mappings.cd),
+        \ printf("      %3s┃Change working directory up one level from current.",  g:BufSelectSetup.mappings.cdup),
+        \ printf("      %3s┃Move cursor to the next open buffer.",                 g:BufSelectSetup.mappings.next),
         \ printf("      0-9┃Move cursor to the next buffer by buffer number."),
-        \ printf("<Esc> %3s┃Exit the buffer list.",                                   g:BufSelectKeyExit)
+        \ printf("<Esc> %3s┃Exit the buffer list.",                                g:BufSelectSetup.mappings.exit)
         \ ]
     return {'text':footerText + helpText, 'width':max(map(footerText[1:]+helpText[1:], {_,v->strchars(v)}))}
 endfunction
@@ -134,24 +134,24 @@ function! s:SetPosition(currentLine)   " {{{1
 endfunction
 
 function! s:SetupCommands()   " {{{1
-    execute "nnoremap <buffer> <silent>            <Esc>                :call <SID>ExitBufSelect()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyExit         ." :call <SID>ExitBufSelect()<CR>"
-    execute "nnoremap <buffer> <silent>            <CR>                 :call <SID>SwitchBuffers('buffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyOpen         ." :call <SID>SwitchBuffers('buffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySplit        ." :call <SID>SwitchBuffers('sbuffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyVSplit       ." :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyTab          ." :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>"
-    execute "nnoremap <buffer> <silent>            g<CR>                :call <SID>SwitchBuffers('buffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewOpen  ." :call <SID>SwitchBuffers('buffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewSplit ." :call <SID>SwitchBuffers('sbuffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewVSplit." :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyPreviewTab   ." :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyFind         ." :call <SID>FindInWindow()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyDeleteBuffer ." :call <SID>CloseBuffer()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySort         ." :call <SID>ChangeSort()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDir        ." :call <SID>ChangeDir()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeyChDirUp      ." :call <SID>ChangeDirUp()<CR>"
-    execute "nnoremap <buffer> <silent> ".g:BufSelectKeySelectOpen   ." :call <SID>SelectOpenBuffers()<CR>"
+    execute "nnoremap <buffer> <silent>            <Esc>             :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.exit   ." :call <SID>ExitBufSelect()<CR>"
+    execute "nnoremap <buffer> <silent>            <CR>              :call <SID>SwitchBuffers('buffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.open   ." :call <SID>SwitchBuffers('buffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.split  ." :call <SID>SwitchBuffers('sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.vsplit ." :call <SID>SwitchBuffers('vertical sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.tab    ." :call <SID>SwitchBuffers('tab sbuffer', 0)<CR>"
+    execute "nnoremap <buffer> <silent>            g<CR>             :call <SID>SwitchBuffers('buffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.gopen  ." :call <SID>SwitchBuffers('buffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.gsplit ." :call <SID>SwitchBuffers('sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.gvsplit." :call <SID>SwitchBuffers('vertical sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.gtab   ." :call <SID>SwitchBuffers('tab sbuffer', 1)<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.find   ." :call <SID>FindInWindow()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.delete ." :call <SID>CloseBuffer()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.sort   ." :call <SID>ChangeSort()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.cd     ." :call <SID>ChangeDir()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.cdup   ." :call <SID>ChangeDirUp()<CR>"
+    execute "nnoremap <buffer> <silent> ".g:BufSelectSetup.mappings.next   ." :call <SID>SelectOpenBuffers()<CR>"
 
     for i in range(10)
         execute 'nnoremap <buffer> <silent> '.i." :call <SID>SelectByNumber(".i.")<CR>"
@@ -213,7 +213,7 @@ endfunction
 
 function! s:ChangeSort()   " {{{1
     let sortOptions = ["Num", "Status", "Name", "Extension", "Path"]
-    let g:BufSelectSortOrder = sortOptions[(index(sortOptions, g:BufSelectSortOrder) + 1) % len(sortOptions)]
+    let g:BufSelectSetup.sortOrder = sortOptions[(index(sortOptions, g:BufSelectSetup.sortOrder) + 1) % len(sortOptions)]
     let currBuffer = s:GetSelectedBuffer()
     call s:SortBufferList()
     call s:UpdateFooter()
