@@ -176,5 +176,4 @@ The highlight groups defined for **BufSelect** are:
 * `BufSelectCurrent` - the current buffer also indicated by a `%`, and the current working directory
 * `BufSelectAlt` - the alternate buffer also indicated by a `#`
 * `BufSelectUnsaved` - unsaved buffers also indicated by a `+`
-* `BufSelectHelp` - the question mark in `? for help`
-* `BufSelectKeys` - mapped keys in the help text
+* `BufSelectHelp` - the question mark in `? for help`, and the list of mapped keys in the help text
