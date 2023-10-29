@@ -44,38 +44,36 @@ The structure of the dictionary follows. Only the settings you want to override 
         <tr>
             <td>
 <pre>
-let g:BufSelectSetup =
-  \ {
-    \ 'mappings': {
-      \ 'open':    'o',
-      \ 'split':   's',
-      \ 'vsplit':  'v',
-      \ 'tab':     't',
-      \ 'gopen':   'go',
-      \ 'gsplit':  'gs',
-      \ 'gvsplit': 'gv',
-      \ 'gtab':    'gt',
-      \ 'exit':    'q',
-      \ 'find':    'f',
-      \ 'delete':  'x',
-      \ 'sort':    'S',
-      \ 'cd':      'cd',
-      \ 'cdup':    '..',
-      \ 'next':    '#'
-    \ },
-    \ 'sortOrder': 'Name',
-    \ 'win': {
-      \ 'config':  {'border': 'double'},
-      \ 'hl':      ''
-    \ }
+let g:BufSelectSetup = {
+  \ 'mappings': {
+    \ 'open':    'o',
+    \ 'split':   's',
+    \ 'vsplit':  'v',
+    \ 'tab':     't',
+    \ 'gopen':   'go',
+    \ 'gsplit':  'gs',
+    \ 'gvsplit': 'gv',
+    \ 'gtab':    'gt',
+    \ 'exit':    'q',
+    \ 'find':    'f',
+    \ 'delete':  'x',
+    \ 'sort':    'S',
+    \ 'cd':      'cd',
+    \ 'cdup':    '..',
+    \ 'next':    '#'
+  \ },
+  \ 'sortOrder': 'Name',
+  \ 'win': {
+    \ 'config':  {'border': 'double'},
+    \ 'hl':      ''
   \ }
+\ }
 </pre>
             </td>
             <td>
 <pre>
-&nbsp;
-&nbsp;
-&nbsp;
+           •
+           •
 g:BufSelectKeyOpen
 g:BufSelectKeySplit
 g:BufSelectKeyVSplit
@@ -91,13 +89,13 @@ g:BufSelectKeySort
 g:BufSelectKeyChDir
 g:BufSelectKeyChDirUp
 g:BufSelectKeySelectOpen
-&nbsp;
+           •
 g:BufSelectSortOrder
-&nbsp;
+           •
 g:BufSelectFloatWinConfig
-(This is new. No old variable.)
-&nbsp;
-&nbsp;
+(No old variable)
+           •
+           •
 </pre>
             </td>
         </tr>
@@ -108,8 +106,8 @@ g:BufSelectFloatWinConfig
 
 The `'mappings'` dictionary defines the key mappings that work only within **BufSelect**. They perform the following functions:
 
-Mapping | Function
----|---
+Dictionary Key | Function
+:-:|---
 `'open'`    | Open the buffer in the current window, meaning the one under the **BufSelect** floating window.
 `'split'`   | Open the buffer in a new horzontal split.
 `'vsplit'`  | Open the buffer in a new vertical split.
@@ -131,10 +129,10 @@ Mapping | Function
 Other unconfigurable mappings are:
 
 Mapping | Function
----|---
+:-:|---
 <kbd>Enter</kbd> | opens a buffer in the current window. It's the same as `'open'`.
 <kbd>Esc</kbd> | exits the buffer list - the same as `'exit'`.
-<kbd>0</kbd>...<kbd>9</kbd> | moves the cursor to the next buffer matching the cumulatively-typed buffer number.
+<kbd>0</kbd>...<kbd>9</kbd> | moves the cursor to the next buffer matching the cumulatively-typed buffer number. For example, typing <kbd>3</kbd> will search for buffer **3**. Then pressing <kbd>5</kbd> will search for buffer **35**. If there is no **35**, it will look for buffer **5**.
 <kbd>?</kbd> | shows/hides short descriptions of all mappings.
 
 ![image](media/lightScreenshot.png)
