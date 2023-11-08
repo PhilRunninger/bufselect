@@ -109,12 +109,12 @@ The `'mappings'` dictionary defines the key mappings that work only within **Buf
 Dictionary Key | Function
 :-:|---
 `'open'`    | Open the buffer in the current window, meaning the one under the **BufSelect** floating window.
-`'split'`   | Open the buffer in a new horzontal split.
+`'split'`   | Open the buffer in a new horizontal split.
 `'vsplit'`  | Open the buffer in a new vertical split.
 `'tab'`     | Open the buffer in a new tab.
 |
 `'gopen'`   | Preview the buffer in the current window, keeping **BufSelect** open.
-`'gsplit'`  | Preview the buffer in a new horzontal split, keeping **BufSelect** open.
+`'gsplit'`  | Preview the buffer in a new horizontal split, keeping **BufSelect** open.
 `'gvsplit'` | Preview the buffer in a new vertical split, keeping **BufSelect** open.
 `'gtab'`    | Preview the buffer in a new tab, keeping **BufSelect** open.
 |
@@ -126,7 +126,7 @@ Dictionary Key | Function
 `'next'`    | Move cursor to the next listed open buffer.
 `'exit'`    | Exit the buffer list.
 
-Other unconfigurable mappings are:
+Other, non-configurable mappings are:
 
 Mapping | Function
 :-:|---
@@ -149,29 +149,28 @@ The initial sort order is set by the `'sortOrder'` setting. Valid values are `'N
 
 ### Floating Window Customizations
 
-The **BufSelect** floating window can be configured two different ways in the `'win'` dictionary.
+The **BufSelect** floating window can be configured two different ways in the `'win'` dictionary, which contains these two items:
 
-1. `'win.config'` lets you change things like the border and title of the window, like so:
+1. The `'config'` dictionary lets you change things like the border and title of the window. For more for details, check out `:help nvim_open_win()`. Example:
 
-```vim
-let g:BufSelectSetup = {'win': {'config': {'border': 'single', title: ' Buffers: '}}
-```
+    ```vim
+    let g:BufSelectSetup = {'win': {'config': {'border': 'single', title: ' Buffers: '}}
+    ```
 
-![image](media/floatwinconfig.png)
-<br/>**Figure 3**: BufSelect with a single border and a title
+    ![image](media/floatwinconfig.png)
+    <br/>**Figure 3**: BufSelect with a single border and a title
 
-For more for details, please check `:help nvim_open_win()`.
 
-2. `'win.hl'` provides a way to override highlighting. Check out `:help 'winhl'` to see how it works. If your colorscheme doesn't define `NormalFloat`, you can use this make it look like the normal background. It also works to link the **BufSelect** highlight groups to other highlight groups. Both examples are shown here:
+1. The `'hl'` string setting is used to override highlighting. Read `:help 'winhl'` to see how it works. For example, if your colorscheme doesn't define `NormalFloat`, you can use this to make it look like the normal background. It also works to link the **BufSelect** highlight groups to other highlight groups. Both scenarios are shown in this example:
 
-```vim
-let g:BufSelectSetup = {'win': {'hl': 'NormalFloat:Normal,BufSelectSort:Pmenu,BufSelectCurrent:Keyword'}}
-```
+    ```vim
+    let g:BufSelectSetup = {'win': {'hl': 'NormalFloat:Normal,BufSelectCurrent:Keyword'}}
+    ```
 
-The highlight groups defined for **BufSelect** are:
+    The highlight groups defined for **BufSelect** are:
 
-* `BufSelectSort` - the sort indicator
-* `BufSelectCurrent` - the current buffer also indicated by a `%`, and the current working directory
-* `BufSelectAlt` - the alternate buffer also indicated by a `#`
-* `BufSelectUnsaved` - unsaved buffers also indicated by a `+`
-* `BufSelectHelp` - the question mark in `? for help`, and the list of mapped keys in the help text
+    * `BufSelectSort` - the sort indicator
+    * `BufSelectCurrent` - the current buffer (also indicated by a `%`) and the current working directory
+    * `BufSelectAlt` - the alternate buffer (also indicated by a `#`)
+    * `BufSelectUnsaved` - unsaved buffers (also indicated by a `+`)
+    * `BufSelectHelp` - the question mark in `? for help`, and the list of mapped keys in the help text
