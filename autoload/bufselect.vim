@@ -119,7 +119,7 @@ endfunction
 
 function! s:UpdateFooter()   " {{{1
     setlocal modifiable
-    silent /^[▀▔]\+$/,$delete
+    silent /^[▀▔]\+$/,$delete _
     call append('$', s:Footer().text)
     setlocal nomodifiable
 endfunction
@@ -173,9 +173,7 @@ function! s:ExitBufSelect()   "{{{1
 endfunction
 
 function! s:GetSelectedBuffer()   " {{{1
-    let lineOfText = getline(line('.'))
-    let bufNum = matchstr(lineOfText, '^\s*\zs\d\+\ze:')
-    return str2nr(bufNum)
+    return str2nr(matchstr(getline(line('.')), '^\s*\zs\d\+\ze:'))
 endfunction
 
 function! s:SwitchBuffers(windowCmd, preview)   " {{{1
