@@ -7,7 +7,7 @@
 * A [single command](#command) to kick things off.
 * A simple list in a floating window, showing the current working directory, and buffer number, filename, and relative path of all listed buffers.
     ![image](media/darkScreenshot.png)
-    <br>**Figure 1**: BufSelect on a dark background
+    <br>**Figure 1**: BufSelect with a dark colorscheme
 
 * A few [key mappings](#key-mappings) to open, find, or delete buffers, sort the list, change working directory, and quickly navigate the list.
 * Other settings define [sort order](#sort-order) and [window customizations](#window-customizations).
@@ -24,7 +24,7 @@ The `master` branch of this plugin is no longer compatible with Vim, and all new
 
 The only command is **`:ShowBufferList`**, which can be assigned to a key. The mapping is not done by this plugin, so as not to interfere with your existing mappings. Here's an example of how you would map the command:
 ```vim
-" vim script
+" vimscript
 nnoremap <silent> <leader>b :ShowBufferList<CR>
 ```
 ```lua
@@ -34,35 +34,35 @@ vim.api.nvim_set_keymap('n', '<leader>b', ':ShowBufferList<CR>', {noremap=true, 
 
 ## Settings
 
-Settings for **BufSelect** are defined in a dictionary that is passed as a parameter to the `bufselect#settings` autoload function. The structure of the dictionary follows. Only the settings you want to override need to be specified. All others will have the default value, which also is shown here.
+Settings for **BufSelect** are defined in a dictionary that is passed as a parameter to the `bufselect#settings` autoload function. The structure of the dictionary follows. Only the settings you want to override need to be specified. All others will use the default values, which are shown here.
 
-```json
+```vim
 {
   "mappings": {
-    "open": "o",
-    "split": "s",
-    "vsplit": "v",
-    "tab": "t",
-    "gopen": "go",
-    "gsplit": "gs",
+    "open":    "o",
+    "split":   "s",
+    "vsplit":  "v",
+    "tab":     "t",
+    "gopen":   "go",
+    "gsplit":  "gs",
     "gvsplit": "gv",
-    "gtab": "gt",
-    "exit": "q",
-    "find": "f",
-    "delete": "x",
-    "sort": "S",
-    "cd": "cd",
-    "cdup": "..",
-    "next": "#"
+    "gtab":    "gt",
+    "exit":    "q",
+    "find":    "f",
+    "delete":  "x",
+    "sort":    "S",
+    "cd":      "cd",
+    "cdup":    "..",
+    "next":    "#"
   },
   "sortOrder": "Name",
   "win": {
     "config": {"border": "double"},
-    "hl": ""
+    "hl":     ""
   }
 }
 ```
-Here are some examples:
+Here is the syntax for calling the `bufselect#settings` function, from either vimscript or lua.
 ```vim
 " vimscript
 call bufselect#settings({
@@ -80,7 +80,7 @@ vim.fn['bufselect#settings']({
 
 ### Key Mappings
 
-The `'mappings'` dictionary defines the key mappings that work only within **BufSelect**. They perform the following functions:
+The `'mappings'` part of dictionary defines key mappings that work only within **BufSelect**. They perform the following functions:
 
 | Dictionary Key | Function |
 | :-: | --- |
@@ -112,7 +112,7 @@ Some other mappings are non-configurable. They are:
 | <kbd>?</kbd> | shows/hides short descriptions of all mappings. |
 
 ![image](media/lightScreenshot.png)
-<br>**Figure 2**: On a light background, with help text shown.
+<br>**Figure 2**: Using a light colorscheme, and showing the help text.
 
 ### Sort Order
 The initial sort order is set by the `'sortOrder'` setting. Valid values are `'Num'`, `'Status'`, `'Name'`, `'Extension'`, and `'Path'`.
@@ -130,7 +130,7 @@ The **BufSelect** floating window can be customized two different ways in the `'
 1. The `'config'` dictionary lets you change things like the border and title of the window. Check out [:help nvim_open_win()](https://neovim.io/doc/user/api.html#nvim_open_win()) for more for details. Example:
 
     ```vim
-    " vim script
+    " vimscript
     call bufselect#settings({'win': {'config': {'border':'single', 'title':'Buffers:'}}})
     ```
     ```lua
@@ -139,12 +139,12 @@ The **BufSelect** floating window can be customized two different ways in the `'
     ```
 
     ![image](media/floatwinconfig.png)
-    <br>**Figure 3**: BufSelect with a single border and a title
+    <br>**Figure 3**: Custom Window Attributes: single border and a title
 
 1. The `'hl'` string setting is used to override highlighting. Read [:help 'winhl'](https://neovim.io/doc/user/options.html#'winhl') to see how it works. For example, if your colorscheme doesn't define `NormalFloat`, you can use this to make it look like the normal background. It also works to link the **BufSelect** highlight groups to other highlight groups. Both scenarios are shown in this example:
 
     ```vim
-    " vim script
+    " vimscript
     call bufselect#settings({'win': {'hl': 'NormalFloat:Normal,BufSelectCurrent:Keyword'}})
     ```
     ```lua
