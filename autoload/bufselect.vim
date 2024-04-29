@@ -31,7 +31,6 @@ let s:defaultSettings =
         \ },
     \ }
 let s:settings = s:defaultSettings
-let s:userSettings = {}
 
 " Merge two dictionaries - a recursive version of: extend(copy(expr1), expr2, 'force')
 function! s:deep_extend(defaults, override) abort
@@ -46,8 +45,7 @@ endfunction
 
 function! bufselect#settings(...)
     if a:0 && type(a:1) == v:t_dict
-        let s:userSettings = a:1
-        let s:settings = s:deep_extend(s:defaultSettings, s:userSettings)
+        let s:settings = s:deep_extend(s:defaultSettings, a:1)
     endif
     return s:settings
 endfunction
