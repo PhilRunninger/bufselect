@@ -114,16 +114,16 @@ endfunction
 
 function! s:SortBufferList()   " {{{1
     setlocal modifiable
-    1,/^[▀▔]\+$/-1sort n
+    keeppatterns 1,/^[▀▔]\+$/-1sort n
     if s:settings.sortOrder != "Num"
-        execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:filenameColumn-1) . '}/'
+        execute 'keeppatterns 1,/^[▀▔]\+$/-1sort /^.\{' . (s:filenameColumn-1) . '}/'
     endif
     if s:settings.sortOrder == "Status"
-        execute '1,/^[▀▔]\+$/-1sort! /^\s*\d\+:..\zs.\ze/ r'
+        execute 'keeppatterns 1,/^[▀▔]\+$/-1sort! /^\s*\d\+:..\zs.\ze/ r'
     elseif s:settings.sortOrder == "Extension"
-        execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:extensionColumn-1) . '}/'
+        execute 'keeppatterns 1,/^[▀▔]\+$/-1sort /^.\{' . (s:extensionColumn-1) . '}/'
     elseif s:settings.sortOrder == "Path"
-        execute '1,/^[▀▔]\+$/-1sort /^.\{' . (s:pathColumn-1) . '}/'
+        execute 'keeppatterns 1,/^[▀▔]\+$/-1sort /^.\{' . (s:pathColumn-1) . '}/'
     endif
     setlocal nomodifiable
 endfunction
@@ -165,7 +165,7 @@ endfunction
 
 function! s:UpdateFooter()   " {{{1
     setlocal modifiable
-    silent /^[▀▔]\+$/,$delete _
+    silent keeppatterns /^[▀▔]\+$/,$delete _
     call append('$', s:Footer().text)
     setlocal nomodifiable
 endfunction
