@@ -51,6 +51,14 @@ function! bufselect#settings(...)
 endfunction
 
 function! bufselect#RefreshBufferList(currentLine)   " {{{1
+    " Move to a window whose buffer can be switched.
+    let availableWindows = filter(range(1,winnr('$')), {_,v -> getwinvar(v,'&winfixbuf')==0})
+    if empty(availableWindows)
+        new
+    elseif index(availableWindows, winnr()) == -1
+        execute availableWindows[0] . 'wincmd w'
+    endif
+
     let bufferList = s:GetBufferList()
     if empty(bufferList)
         echo 'No buffers!'
